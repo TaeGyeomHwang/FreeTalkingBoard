@@ -30,7 +30,7 @@ public class ReReply {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reply_id")
-    private ReReply reReply;
+    private Reply reReply;
 
     @Column(name = "re_reply_is_deleted")
     private boolean isDeleted;
