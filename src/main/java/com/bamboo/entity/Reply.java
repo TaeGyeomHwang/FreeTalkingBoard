@@ -6,28 +6,28 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "board")
+@Table(name = "reply")
 @Getter
 @Setter
 @ToString
-public class Board extends BaseEntity{
+public class Reply extends BaseEntity{
 
     @Id
-    @Column(name = "board_id")
+    @Column(name = "reply_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @Column(name = "reply_content", nullable = false)
+    private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(nullable = false, name = "board_title")
-    private String title;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id")
+    private Board board;
 
-    @Lob
-    @Column(name = "board_content", nullable = false)
-    private String content;
-
-    @Column(name = "board_isdeleted")
+    @Column(name = "reply_isdeleted")
     private boolean isDeleted;
 }

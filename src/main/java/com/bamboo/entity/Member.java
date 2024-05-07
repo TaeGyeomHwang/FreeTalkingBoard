@@ -12,7 +12,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Getter
 @Setter
 @ToString
-public class Member {
+public class Member extends BaseEntity {
 
     @Id
     @Column(name = "member_id")
@@ -22,6 +22,7 @@ public class Member {
     @Column(unique = true)
     private String email;
 
+    @Column(name = "member_name")
     private String name; // 유저 아이디
 
     private String password;
