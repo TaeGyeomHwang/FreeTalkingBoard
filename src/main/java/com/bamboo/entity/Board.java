@@ -28,6 +28,8 @@ public class Board extends BaseEntity{
     @Column(name = "board_content", nullable = false)
     private String content;
 
-    @Column(name = "board_isdeleted")
+    @Column(name = "board_is_deleted")
     private boolean isDeleted;
+
+    private Long good;
 }

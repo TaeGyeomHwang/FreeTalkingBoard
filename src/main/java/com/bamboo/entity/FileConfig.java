@@ -23,5 +23,4 @@ public class FileConfig {
 
     private Long maxFileSize;
 
-    private List<String> allowedFileExtensions;
 }

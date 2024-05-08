@@ -1,6 +1,7 @@
 package com.bamboo.entity;
 
 import com.bamboo.constant.Role;
+import com.bamboo.dto.MemberFormDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,4 +30,6 @@ public class Member extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+
 }

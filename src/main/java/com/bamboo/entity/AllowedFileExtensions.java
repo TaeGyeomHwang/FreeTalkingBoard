@@ -6,22 +6,20 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "board_hashtag_map")
+@Table(name = "allowed_file_extension")
 @Getter
 @Setter
 @ToString
-public class BoardHashtagMap {
+public class AllowedFileExtensions {
 
     @Id
-    @Column(name = "board_hashtag_map_id")
+    @Column(name = "allowed_file_extension_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id")
-    private Board board;
+    @JoinColumn(name = "file_config_id")
+    private FileConfig fileConfig;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hashtag_id")
-    private Hashtag hashtag;
+    private String extension;
 }
