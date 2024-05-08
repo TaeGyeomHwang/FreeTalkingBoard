@@ -10,7 +10,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ReReply {
+public class ReReply extends BaseTimeEntity{
 
     @Id
     @Column(name = "re_reply_id")
@@ -21,7 +21,7 @@ public class ReReply {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_email")
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)

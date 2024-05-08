@@ -13,23 +13,24 @@ import org.springframework.data.relational.core.mapping.Table;
 @Getter
 @Setter
 @ToString
-public class Member extends BaseEntity {
+public class Member extends BaseTimeEntity {
 
     @Id
     @Column(name = "member_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(unique = true)
+    @Column(name = "member_email", unique = true)
     private String email;
 
     @Column(name = "member_name")
-    private String name; // 유저 아이디
+    private String name;
 
     private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
-
+    @Column(name = "member_is_deleted")
+    private boolean isDeleted;
 }

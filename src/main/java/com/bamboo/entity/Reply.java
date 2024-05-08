@@ -10,7 +10,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Reply extends BaseEntity{
+public class Reply extends BaseTimeEntity{
 
     @Id
     @Column(name = "reply_id")
@@ -21,13 +21,13 @@ public class Reply extends BaseEntity{
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_email")
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     private Board board;
 
-    @Column(name = "reply_isdeleted")
+    @Column(name = "reply_is_deleted")
     private boolean isDeleted;
 }
