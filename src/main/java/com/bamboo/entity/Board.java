@@ -10,7 +10,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Board extends BaseEntity{
+public class Board extends BaseTimeEntity{
 
     @Id
     @Column(name = "board_id")

@@ -15,11 +15,11 @@ public class BoardFile {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String imgName;
+    private String fileName;
 
-    private String oriImgName;
+    private String oriFileName;
 
-    private String imgUrl;
+    private String fileUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")

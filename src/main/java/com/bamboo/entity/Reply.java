@@ -4,13 +4,18 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reply")
 @Getter
 @Setter
 @ToString
-public class Reply extends BaseTimeEntity{
+@EntityListeners(value = {AuditingEntityListener.class})
+public class Reply {
 
     @Id
     @Column(name = "reply_id")
@@ -30,4 +35,8 @@ public class Reply extends BaseTimeEntity{
 
     @Column(name = "reply_is_deleted")
     private boolean isDeleted;
+
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime regTime;
 }

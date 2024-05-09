@@ -16,10 +16,6 @@ import org.springframework.data.relational.core.mapping.Table;
 public class Member extends BaseTimeEntity {
 
     @Id
-    @Column(name = "member_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
     @Column(name = "member_email", unique = true)
     private String email;
 
