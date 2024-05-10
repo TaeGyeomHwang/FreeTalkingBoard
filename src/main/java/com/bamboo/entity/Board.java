@@ -31,5 +31,10 @@ public class Board extends BaseTimeEntity{
     @Column(name = "board_is_deleted")
     private boolean isDeleted;
 
+    @Column(name = "board_is_restored")
+    private boolean isRestored;
+
     private Long good;
+
+    private Long hit;
 }

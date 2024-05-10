@@ -21,5 +21,5 @@ public class AllowedFileExtensions {
     @JoinColumn(name = "file_config_id")
     private FileConfig fileConfig;
 
-    private String extensifileon;
+    private String extension;
 }
