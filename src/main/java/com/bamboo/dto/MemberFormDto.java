@@ -10,7 +10,7 @@ public class MemberFormDto {
 
     private String email;
 
-    private String name; // 유저 아이디
+    private String name; // 유저 이름
 
     private String password;
 }
