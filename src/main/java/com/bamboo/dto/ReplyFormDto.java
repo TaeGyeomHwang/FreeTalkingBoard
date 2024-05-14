@@ -10,14 +10,19 @@ import org.modelmapper.ModelMapper;
 @Setter
 public class ReplyFormDto {
 
-    private Long id;
-
     private String content;
 
-    private static ModelMapper modelMapper = new ModelMapper();
+    // 댓글 객체 생성
+    public Reply createReply() {
+        Reply reply = new Reply();
+        reply.setContent(this.content);
+        return reply;
+    }
 
-    public Reply createReply(){return modelMapper.map(this, Reply.class);}
-
-    public ReReply createReReply(){return modelMapper.map(this, ReReply.class);}
-
+    // 대댓글 객체 생성
+    public ReReply createReReply() {
+        ReReply reReply = new ReReply();
+        reReply.setContent(this.content);
+        return reReply;
+    }
 }

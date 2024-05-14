@@ -91,6 +91,7 @@ class ReplyServiceTest {
                 .orElseThrow(EntityNotFoundException::new);
 
         assertEquals(member.getEmail(), reply.getMember().getEmail());
+        assertEquals(replyFormDto.getContent(), reply.getContent());
 
     }
 

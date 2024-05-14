@@ -27,6 +27,7 @@ public class ReReplyService {
 
     private final ReReplyRepository reReplyRepository;
 
+    //  대댓글 저장
     public Long saveReReply(String email, Long boardId, Long replyId, ReplyFormDto replyFormDto){
         ReReply reReply = replyFormDto.createReReply();
 
@@ -47,6 +48,7 @@ public class ReReplyService {
         return reReply.getId();
     }
 
+    //  대댓글 삭제
     public void cancelReReply(Long reReplyId){
         ReReply reReply = reReplyRepository.findById(reReplyId)
                 .orElseThrow(EntityNotFoundException::new);
