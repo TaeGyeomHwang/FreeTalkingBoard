@@ -2,7 +2,6 @@ package com.bamboo.controller;
 
 import com.bamboo.dto.ReplyDto;
 import com.bamboo.dto.ReplyFormDto;
-import com.bamboo.entity.Member;
 import com.bamboo.service.ReplyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +46,12 @@ public class ThymeleafExController {
             return "thymeleafEx/test";
         }
 
+        return "redirect:/comments/test";
+    }
+    
+    //  대댓글 등록하기
+    @PostMapping(value = "/new/rereply")
+    public String reReplyNew(){
         return "redirect:/comments/test";
     }
 }
