@@ -1,5 +1,6 @@
 package com.bamboo.service;
 
+import com.bamboo.dto.MemberUpdateDto;
 import com.bamboo.entity.Member;
 import com.bamboo.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,4 +44,21 @@ public class MemberService implements UserDetailsService {
                 .roles(member.getRole().toString())
                 .build();
     }
+
+    //회원 수정
+    public String updateMember(MemberUpdateDto memberUpdateDto) {
+        Member member = memberRepository.findByEmail(memberUpdateDto.getEmail());
+        member.updateMemberName(memberUpdateDto.getName());
+        member.updatePassword(memberUpdateDto.getPassword());
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String encodePw = encoder.encode(memberUpdateDto.getPassword());
+        member.updatePassword(encodePw);
+
+        memberRepository.save(member);
+
+        return member.getEmail();
+
+    }
+
 }
