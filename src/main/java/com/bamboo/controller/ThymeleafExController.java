@@ -92,7 +92,6 @@ public class ThymeleafExController {
 
         try{
             System.out.println("대댓글 등록 시작");
-            System.out.println("게시글 번호"+boardId);
             reReplyService.saveReReply("test@test.com", boardId, replyFormDto);
         }catch (Exception e) {
             System.out.println("댓글 삭제 에러 메시지:"+e.getMessage());
