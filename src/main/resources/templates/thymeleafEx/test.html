@@ -43,9 +43,10 @@
 
     <!-- 댓글 입력 폼 -->
 <!--    게시글 번호 넣을 부분-->
-    <form th:action="'/comments/new/' + ${boardId}" method="post" th:object="${replyFormDto}">
+    <form action="/comments/new" method="post" th:object="${replyFormDto}">
         <div class="input-group mb-3">
             <textarea class="form-control" th:field="*{content}" rows="3" placeholder="댓글을 입력하세요"></textarea>
+            <input type="hidden" name="boardId" th:value="${boardId}">
             <div class="input-group-append">
                 <button type="submit" class="btn btn-primary">댓글 등록</button>
             </div>

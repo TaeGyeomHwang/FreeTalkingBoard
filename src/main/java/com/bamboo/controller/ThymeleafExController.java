@@ -40,8 +40,8 @@ public class ThymeleafExController {
     }
 
     //  댓글 등록하기
-    @PostMapping(value = "/new/{boardId}")
-    public String replyNew(@Valid ReplyFormDto replyFormDto, @PathVariable("boardId") Long boardId, BindingResult bindingResult, Model model){
+    @PostMapping(value = "/new")
+    public String replyNew(@Valid ReplyFormDto replyFormDto, @RequestParam("boardId") Long boardId, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){
             return "thymeleafEx/test";
         }
