@@ -84,14 +84,15 @@ public class ThymeleafExController {
 
 
     //  대댓글 등록하기
-    @PostMapping(value = "/new/rereply/{boardId}")
-    public String reReplyNew(@Valid ReplyFormDto replyFormDto, @PathVariable("boardId") Long boardId, BindingResult bindingResult, Model model){
+    @PostMapping(value = "/new/rereply")
+    public String reReplyNew(@Valid ReplyFormDto replyFormDto, @RequestParam("boardId") Long boardId, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){
             return "thymeleafEx/test";
         }
 
         try{
             System.out.println("대댓글 등록 시작");
+            System.out.println("게시글 번호"+boardId);
             reReplyService.saveReReply("test@test.com", boardId, replyFormDto);
         }catch (Exception e) {
             System.out.println("댓글 삭제 에러 메시지:"+e.getMessage());
@@ -99,7 +100,7 @@ public class ThymeleafExController {
             return "thymeleafEx/test";
         }
 
-        return "redirect:/comments/test";
+        return "redirect:/comments/test/" + boardId;
     }
 
     //  대댓글 삭제하기

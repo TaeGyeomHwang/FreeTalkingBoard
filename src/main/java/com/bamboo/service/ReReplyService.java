@@ -65,17 +65,17 @@ public class ReReplyService {
         List<ReReply> reReplies = reReplyRepository.findAllNotDeleted();
 
         // 디버깅 로그: 조회된 댓글 개수 출력
-        System.out.println("Number of reReplies retrieved: " + reReplies.size());
+//        System.out.println("Number of reReplies retrieved: " + reReplies.size());
 
         List<ReReplyDto> replyDtos = new ArrayList<>();
 
         for (ReReply reReply : reReplies){
             // 디버깅 로그: 각 댓글 정보 출력
-            System.out.println("ReReply ID: " + reReply.getId());
-            System.out.println("ReReply Content: " + reReply.getContent());
-            System.out.println("ReReply Member: " + reReply.getMember().getEmail());
-            System.out.println("ReReply Board: " + reReply.getBoard().getId());
-            System.out.println("ReReply ReplyId: " + reReply.getReply().getId());
+//            System.out.println("ReReply ID: " + reReply.getId());
+//            System.out.println("ReReply Content: " + reReply.getContent());
+//            System.out.println("ReReply Member: " + reReply.getMember().getEmail());
+//            System.out.println("ReReply Board: " + reReply.getBoard().getId());
+//            System.out.println("ReReply ReplyId: " + reReply.getReply().getId());
 
             ReReplyDto reReplyDto = new ReReplyDto();
             reReplyDto.setId(reReply.getId());
