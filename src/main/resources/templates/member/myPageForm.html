@@ -41,14 +41,8 @@
             <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="fieldError">8~16자의 비밀번호를 입력하세요.</p>
         </div>
         <button class="btn btn-primary">수정하기</button>
-      <!--  <button type="button" class="btn btn-primary">회원탈퇴</button>-->
-        <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">-->
-    </form>
-
-    <form action="/members/withdraw" method="post">
+        <button type="button" class="btn btn-primary">회원탈퇴</button>
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-        <button type="submit" class="btn btn-danger">회원탈퇴</button>
     </form>
-
 </div>
 </html>
