@@ -10,4 +10,6 @@ public interface BoardRepositoryCustom {
     Page<Board> getBoardPage(BoardSearchDto boardSearchDto, Pageable pageable);
 
     Page<Board> getSortedBoardPage(BoardSearchDto boardSearchDto, Pageable pageable, String sort);
+
+    Page<Board> getDeletedBoardPage(BoardSearchDto boardSearchDto, Pageable pageable);
 }

@@ -112,4 +112,9 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
         return new PageImpl<>(content, pageable, total);
     }
+
+    @Override
+    public Page<Board> getDeletedBoardPage(BoardSearchDto boardSearchDto, Pageable pageable) {
+        return null;
+    }
 }
