@@ -26,9 +26,11 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     private final QBoardHashtagMap boardHashtagMap = QBoardHashtagMap.boardHashtagMap;
 
 
+    //  해당 검색어로 쿼리 검색
     private BooleanExpression searchByLike(String searchBy, String searchQuery) {
         if (searchQuery.startsWith("#")) {
-            String[] hashtagNames = searchQuery.split("#");
+            String result = searchQuery.replace(" ", "");
+            String[] hashtagNames = result.split("#");
             BooleanExpression expression = null;
             for (String hashtagName : hashtagNames) {
                 if (!hashtagName.isEmpty()) {
@@ -74,11 +76,11 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     }
 
     public Page<Board> getSortedBoardPage(BoardSearchDto boardSearchDto, Pageable pageable, String sortBy) {
-        // Define your query expressions
+        // 쿼리 표현식 정의
         BooleanExpression searchExpression = searchByLike(boardSearchDto.getSearchBy(), boardSearchDto.getSearchQuery());
         OrderSpecifier<?> orderSpecifier;
 
-        // Determine the sorting attribute and create an OrderSpecifier accordingly
+        // 정렬 속성을 결정하고 그에 따라 OrderSpecifier 생성
         switch (sortBy) {
             case "title":
                 orderSpecifier = board.title.asc();
@@ -86,19 +88,16 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
             case "member.name":
                 orderSpecifier = board.member.name.asc();
                 break;
-            case "hit":
-                orderSpecifier = board.hit.desc(); // Example of descending order
-                break;
             case "regTime":
                 orderSpecifier = board.regTime.asc();
                 break;
             default:
-                // Default sorting if no valid attribute is provided
-                orderSpecifier = board.id.desc(); // For example, sorting by ID in descending order
+                // 유효한 속성이 제공되지 않은 경우 기본 정렬 방법
+                orderSpecifier = board.id.desc();
                 break;
         }
 
-        // Execute the query with sorting and pagination
+        // 조건에 따라 글 목록 쿼리 생성
         JPAQuery<Board> query = queryFactory
                 .selectFrom(board)
                 .leftJoin(boardHashtagMap).on(board.id.eq(boardHashtagMap.board.id))
@@ -107,7 +106,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 
-        // Fetch the content and total count
+        // 쿼리문 및 총 개수 가져오기
         List<Board> content = query.fetch();
         long total = query.fetchCount();
 
