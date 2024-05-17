@@ -3,10 +3,10 @@ package com.bamboo.entity;
 import com.bamboo.constant.Role;
 import com.bamboo.dto.MemberFormDto;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.relational.core.mapping.Table;
 
 @Entity
 @Table(name = "member")
@@ -29,4 +29,5 @@ public class Member extends BaseTimeEntity {
 
     @Column(name = "member_is_deleted")
     private boolean isDeleted;
+
 }

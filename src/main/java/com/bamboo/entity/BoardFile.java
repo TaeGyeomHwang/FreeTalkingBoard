@@ -25,7 +25,7 @@ public class BoardFile {
     @JoinColumn(name = "board_id")
     private Board board;
 
-    public void updateBord(String oriFileName, String fileName, String fileUrl){
+    public void updateBordFile(String oriFileName, String fileName, String fileUrl){
         this.oriFileName = oriFileName;
         this.fileName = fileName;
         this.fileUrl = fileUrl;
