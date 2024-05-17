@@ -16,6 +16,7 @@ public class MemberFormDto {
     private String email;
 
     @NotBlank(message = "이름은 필수 입력 값입니다.")
+    @Length(min = 3, max = 8, message = "이름은 3글자 이상, 8글자 이하로 입력해주세요.")
     private String name; // 유저 아이디
 
     @NotEmpty(message = "비밀번호는 필수 입력 값입니다.")

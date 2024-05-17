@@ -31,6 +31,8 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_is_deleted")
     private boolean isDeleted;
 
+
+
     //회원가입
     public static Member createMember(MemberFormDto memberFormDto, PasswordEncoder passwordEncoder) {
         Member member = new Member();
@@ -42,12 +44,9 @@ public class Member extends BaseTimeEntity {
         return member;
     }
 
-    //회원 정보 수정(메소드)
-    public void updateMemberName(String name) {
-        this.name = name;
-    }
-    public void updatePassword(String password) {
-        this.password = password;
+    //회원탈퇴
+    public void deleteMember() {
+        this.isDeleted = true;
     }
 
 }

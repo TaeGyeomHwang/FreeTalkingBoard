@@ -8,7 +8,7 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 
 import java.io.IOException;
 
-public class CustomAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint {
+public class  CustomAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint {
     public CustomAuthenticationEntryPoint(String loginFormUrl) {
         super(loginFormUrl);
     }
