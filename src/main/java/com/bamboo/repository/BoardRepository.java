@@ -3,10 +3,12 @@ package com.bamboo.repository;
 import com.bamboo.entity.Board;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import java.util.List;
 
-public interface BoardRepository extends JpaRepository<Board, Long> {
+public interface BoardRepository extends JpaRepository<Board, Long>,
+        QuerydslPredicateExecutor<Board>, BoardRepositoryCustom {
 
     //  사용자 이름으로 글 목록 조회 쿼리
     List<Board> findByMemberEmail(String memberEmail);
@@ -19,5 +21,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     List<Board> findAllByOrderByRegTimeDesc();
     List<Board> findAllByOrderByTitleDesc();
-    List<Board> findAllByOrderByMemberDesc();
+    List<Board> findAllByOrderByMemberNameDesc();
+
+
 }

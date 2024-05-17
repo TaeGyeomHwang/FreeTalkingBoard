@@ -41,6 +41,7 @@ public class SecurityConfig {
                     .requestMatchers(antMatcher("/members/**")).permitAll()
                     .requestMatchers(antMatcher("/images/**")).permitAll()
                     .requestMatchers(antMatcher("/comments/**")).permitAll()
+                    .requestMatchers(antMatcher("/boards/**")).permitAll()
                     .requestMatchers("/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated();
         });

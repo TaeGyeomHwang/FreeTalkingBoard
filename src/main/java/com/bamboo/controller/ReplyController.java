@@ -21,7 +21,7 @@ import java.util.List;
 @Controller
 @RequestMapping(value = "/comments")
 @RequiredArgsConstructor
-public class ThymeleafExController {
+public class ReplyController {
 
     private final ReplyService replyService;
 
@@ -36,14 +36,14 @@ public class ThymeleafExController {
         model.addAttribute("rereplys", reReplyDtos);
         model.addAttribute("boardId",boardId);
         model.addAttribute("replyFormDto", new ReplyFormDto());
-        return "thymeleafEx/test";
+        return "reply/test";
     }
 
     //  댓글 등록하기
     @PostMapping(value = "/new")
     public String replyNew(@Valid ReplyFormDto replyFormDto, @RequestParam("boardId") Long boardId, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){
-            return "thymeleafEx/test";
+            return "reply/test";
         }
 
         try{
@@ -58,7 +58,7 @@ public class ThymeleafExController {
         }catch (Exception e) {
             System.out.println("에러 메시지:"+e.getMessage());
             model.addAttribute("errorMessage", "댓글 등록 중 에러가 발생하였습니다.");
-            return "thymeleafEx/test";
+            return "reply/test";
         }
 
         return "redirect:/comments/test/" + boardId;
@@ -77,7 +77,7 @@ public class ThymeleafExController {
             // 삭제 실패 시
             System.out.println("삭제 에러 메시지:"+e.getMessage());
             redirectAttributes.addFlashAttribute("errorMessage", "댓글 삭제 중 오류가 발생했습니다. 다시 시도해주세요.");
-            return "thymeleafEx/test"+ boardId;
+            return "reply/test"+ boardId;
         }
     }
 
@@ -86,7 +86,7 @@ public class ThymeleafExController {
     @PostMapping(value = "/new/rereply")
     public String reReplyNew(@Valid ReplyFormDto replyFormDto, @RequestParam("boardId") Long boardId, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){
-            return "thymeleafEx/test";
+            return "reply/test";
         }
 
         try{
@@ -101,7 +101,7 @@ public class ThymeleafExController {
         }catch (Exception e) {
             System.out.println("댓글 삭제 에러 메시지:"+e.getMessage());
             model.addAttribute("errorMessage", "대댓글 등록 중 에러가 발생하였습니다.");
-            return "thymeleafEx/test";
+            return "reply/test";
         }
 
         return "redirect:/comments/test/" + boardId;
@@ -120,7 +120,7 @@ public class ThymeleafExController {
             // 삭제 실패 시
             System.out.println("대댓글 삭제 에러 메시지:"+e.getMessage());
             redirectAttributes.addFlashAttribute("errorMessage", "대댓글 삭제 중 오류가 발생했습니다. 다시 시도해주세요.");
-            return "thymeleafEx/test";
+            return "reply/test";
         }
     }
 }
