@@ -2,6 +2,7 @@ package com.bamboo.dto;
 
 import com.bamboo.entity.Board;
 import com.bamboo.entity.Hashtag;
+import com.bamboo.entity.Member;
 import lombok.Getter;
 import lombok.Setter;
 import org.modelmapper.ModelMapper;
@@ -18,7 +19,7 @@ public class BoardDto {
 
     private String title;
 
-    private String name;
+    private Member member;
 
     private LocalDateTime regTime;
 

@@ -1,11 +1,15 @@
 package com.bamboo.controller;
 
 import com.bamboo.dto.BoardDto;
+import com.bamboo.entity.Board;
 import com.bamboo.service.BoardService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,7 +30,8 @@ public class BoardController {
     @GetMapping(value = "/boards/{boardId}")
     public String boardDtl(@PathVariable("boardId") Long boardId, Model model){
         try{
-            BoardDto boardDto = new BoardDto();
+            boardService.setHit(boardId);
+            BoardDto boardDto = boardService.getBoardDtl(boardId);
             model.addAttribute("boardDto", boardDto);
         }catch (EntityNotFoundException e) {
             model.addAttribute("errorMessage", "존재하지 않는 게시글 입니다.");
@@ -56,5 +61,21 @@ public class BoardController {
         }
 
         return "redirect:/";
+    }
+
+    @GetMapping(value = "/boards/good/{boardId}")
+    public String boardGood(@PathVariable("boardId") Long boardId, Model model){
+        try{
+//            SecurityContext securityContext = SecurityContextHolder.getContext();
+//            Authentication authentication = securityContext.getAuthentication();
+//            String email = authentication.getName();
+//            boardService.setGood(boardId, email);
+            System.out.println("boardDto의 Id: "+boardId);
+            boardService.setGood(boardId, "test@test.com");
+        }catch (Exception e) {
+            model.addAttribute("errorMessage", "좋아요 에러 발생");
+            return "board/boardDtl";
+        }
+        return "redirect:/boards/"+boardId;
     }
 }

@@ -6,13 +6,67 @@
 <!-- 사용자 스크립트 추가 -->
 <th:block layout:fragment="script">
     <script th:inline="javascript">
-
+        function goToMainPage() {
+            window.location.href = '/';
+        }
     </script>
 </th:block>
 
-<div layout:fragment="content">
+<div layout:fragment="content" style="margin-left: 25%; margin-right: 25%">
 
+    <input type="hidden" id="boardId" th:value="${boardDto.id}">
 
+    <div class="d-flex">
+        <div class="wd50">
+            <div class="h3" th:text="${boardDto.title}"></div>
+            <hr class="my-4">
+
+            <div class="text-right">
+                <div class="h4 text-left">
+                    <small th:text="${boardDto.member.name}"></small><small> | </small>
+                    <small th:text="${#temporals.format(boardDto.regTime, 'yy.MM.dd HH:mm:ss')}"></small><small> | 조회수 </small>
+                    <small th:text="${boardDto.hit}"></small>
+                </div>
+            </div>
+            <hr class="my-4">
+        </div>
+    </div>
+
+    <div class="jumbotron jumbotron-fluid mgt-30">
+        <div class="container">
+            <p class="lead" th:text="${boardDto.content}"></p>
+            <div th:each="boardFile:${boardDto.boardFileDtoList}" class="text-center">
+                <span th:text="${boardFile.oriFileName}"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-right">
+        <a th:href="@{'/boards/good/' + ${boardDto.id}}"
+           class="btn btn-outline-primary">좋아요 <span th:text="${boardDto.good}"></span></a>
+    </div>
+
+    <div style="text-align: center">
+        <button type="button" onclick="goToMainPage()"
+                class="btn btn-outline-secondary">목록으로
+        </button>
+        <th:block th:if="${#authentication.getName() eq boardDto.member.email}">
+            <button type="button"
+                    th:formaction="@{'/boards/update/' + ${boardDto.id}}"
+                    class="btn btn-outline-primary">수정하기
+            </button>
+            <button type="button"
+                    th:formaction="@{'/boards/delete/' + ${boardDto.id}}"
+                    class="btn btn-outline-danger">삭제하기
+            </button>
+        </th:block>
+        <th:block th:if="${#authentication.getAuthorities().contains(T(com.bamboo.constant.Role).ADMIN)}">
+            <button type="button"
+                    th:formaction="@{'/boards/delete/' + ${boardDto.id}}"
+                    class="btn btn-outline-danger">삭제하기
+            </button>
+        </th:block>
+    </div>
 
 </div>
 

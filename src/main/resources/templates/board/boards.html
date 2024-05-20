@@ -43,7 +43,7 @@
             <tr th:each="board, status: ${boards.getContent()}">
                 <td th:text="${board.id}"></td>
                 <td>
-                    <a th:href="'/board/detail/'+${board.id}" th:text="${board.title}"></a>
+                    <a th:href="'/boards/'+${board.id}" th:text="${board.title}"></a>
                 </td>
                 <td th:text="${board.member.getName()}"></td>
                 <td th:text="${board.hit}"></td>

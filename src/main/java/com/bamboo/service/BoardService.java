@@ -1,10 +1,14 @@
 package com.bamboo.service;
 
 import com.bamboo.dto.BoardDto;
+import com.bamboo.dto.BoardFileDto;
 import com.bamboo.dto.BoardSearchDto;
 import com.bamboo.entity.Board;
 import com.bamboo.entity.BoardFile;
+import com.bamboo.entity.BoardMemberMap;
 import com.bamboo.entity.Member;
+import com.bamboo.repository.BoardFileRepository;
+import com.bamboo.repository.BoardMemberMapRepository;
 import com.bamboo.repository.BoardRepository;
 import com.bamboo.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,6 +30,10 @@ public class BoardService {
     private final BoardRepository boardRepository;
 
     private final MemberRepository memberRepository;
+
+    private final BoardFileRepository boardFileRepository;
+
+    private final BoardMemberMapRepository boardMemberMapRepository;
 
     private final BoardFileService boardFileService;
 
@@ -53,5 +62,56 @@ public class BoardService {
         }
 
         return board.getId();
+    }
+
+    @Transactional(readOnly = true)
+    public BoardDto getBoardDtl(Long boardId){
+        List<BoardFile> boardFileList = boardFileRepository.findAllByBoardIdOrderByIdAsc(boardId);
+        List<BoardFileDto> boardFileDtoList = new ArrayList<>();
+        for (BoardFile boardFile : boardFileList){
+            BoardFileDto boardFileDto = BoardFileDto.of(boardFile);
+            boardFileDtoList.add(boardFileDto);
+        }
+
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(EntityNotFoundException::new);
+        BoardDto boardDto = BoardDto.of(board);
+        boardDto.setBoardFileDtoList(boardFileDtoList);
+
+        Member member = board.getMember();
+        boardDto.setMember(member);
+
+        return boardDto;
+    }
+
+    public void setHit(Long boardId){
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        board.setHit(board.getHit()+1);
+        boardRepository.save(board);
+    }
+
+    public void setGood(Long boardId, String email) {
+        // 이미 좋아요 눌렀는지 확인
+        BoardMemberMap existingLike = boardMemberMapRepository.findByBoardIdAndMemberEmail(boardId, email)
+                .orElseThrow(EntityNotFoundException::new);
+        if (existingLike != null) {
+            throw new IllegalStateException("좋아요는 한 글에 한 번만 가능합니다");
+        }
+
+        // 매핑 테이블 생성
+        BoardMemberMap like = new BoardMemberMap();
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(EntityNotFoundException::new);
+        Member member = memberRepository.findById(email)
+                .orElseThrow(EntityNotFoundException::new);
+        like.setBoard(board);
+        like.setMember(member);
+        boardMemberMapRepository.save(like);
+
+        // 좋아요 수 증가
+        board.setGood(board.getGood() + 1);
+        boardRepository.save(board);
     }
 }
