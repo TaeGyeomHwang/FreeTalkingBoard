@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layouts/layout1}">
 
 <!-- 사용자 스크립트 추가 -->
@@ -46,10 +47,14 @@
                 </td>
                 <td th:text="${board.member.getName()}"></td>
                 <td th:text="${board.hit}"></td>
-                <td th:text="${board.regTime}"></td>
+                <td th:text="${#temporals.format(board.regTime, 'yy.MM.dd HH:mm:ss')}"></td>
             </tr>
             </tbody>
         </table>
+
+        <div class="d-flex justify-content-end mt-3" sec:authorize="isAuthenticated()">
+            <a href="/boards/create" class="btn btn-success">글 작성하기</a>
+        </div>
 
         <div th:with="start=${(boards.number/maxPage)*maxPage + 1}, end=(${(boards.totalPages == 0) ? 1 : (start + (maxPage - 1) < boards.totalPages ? start + (maxPage - 1) : boards.totalPages)})" >
             <ul class="pagination justify-content-center">
@@ -82,6 +87,8 @@
             <input th:field="*{searchQuery}" type="text" class="form-control" placeholder="#을 붙여 해시태그 검색">
             <button id="searchBtn" type="submit" class="btn btn-primary">검색</button>
         </div>
+
+
     </form>
 
 </div>

@@ -6,7 +6,6 @@ import com.bamboo.entity.QBoard;
 import com.bamboo.entity.QBoardHashtagMap;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.thymeleaf.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -25,9 +23,10 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     private final QBoard board = QBoard.board;
     private final QBoardHashtagMap boardHashtagMap = QBoardHashtagMap.boardHashtagMap;
 
-
-    //  해당 검색어로 쿼리 검색
+    // 검색 조건 생성
     private BooleanExpression searchByLike(String searchBy, String searchQuery) {
+        BooleanExpression isNotDeleted = board.isDeleted.isFalse();
+
         if (searchQuery.startsWith("#")) {
             String result = searchQuery.replace(" ", "");
             String[] hashtagNames = result.split("#");
@@ -38,15 +37,15 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
                     expression = (expression == null) ? hashtagExpression : expression.or(hashtagExpression);
                 }
             }
-            return expression;
+            return expression != null ? expression.and(isNotDeleted) : isNotDeleted;
         } else if (StringUtils.equals("title", searchBy)) {
-            return board.title.like("%" + searchQuery + "%");
+            return board.title.like("%" + searchQuery + "%").and(isNotDeleted);
         } else if (StringUtils.equals("content", searchBy)) {
-            return board.content.like("%" + searchQuery + "%");
+            return board.content.like("%" + searchQuery + "%").and(isNotDeleted);
         } else if (StringUtils.equals("name", searchBy)) {
-            return board.member.name.like("%" + searchQuery + "%");
+            return board.member.name.like("%" + searchQuery + "%").and(isNotDeleted);
         }
-        return null;
+        return isNotDeleted;
     }
 
     @Override
