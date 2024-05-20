@@ -1,19 +1,14 @@
 package com.bamboo.service;
 
-import com.bamboo.dto.BoardFileDto;
-import com.bamboo.dto.BoardFormDto;
 import com.bamboo.entity.BoardFile;
 import com.bamboo.repository.BoardFileRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.util.StringUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,37 +22,36 @@ public class BoardFileService {
 
     private final FileService fileService;
 
-    public void saveBoardFile(BoardFile boardFile, MultipartFile multipartFile) throws Exception {
+    public void saveBoardFile(BoardFile boardFile, MultipartFile multipartFile) throws Exception{
         String oriFileName = multipartFile.getOriginalFilename();
         String fileName = "";
         String fileUrl = "";
 
+        //파일 업로드
         if(!StringUtils.isEmpty(oriFileName)){
             fileName = fileService.uploadFile(boardFileLocation, oriFileName, multipartFile.getBytes());
-            fileUrl = "/files/item/" + fileName;
+            fileUrl = "/files/board/" + fileName;
         }
 
+        //상품 이미지 정보 저장
         boardFile.updateBordFile(oriFileName, fileName, fileUrl);
         boardFileRepository.save(boardFile);
     }
 
 
-    public void updateBoardFile(Long boardFileId, MultipartFile multipartFile) throws Exception{
-        if(!multipartFile.isEmpty()){
-            BoardFile savedBoardFile = boardFileRepository.findById(boardFileId)
-                    .orElseThrow(EntityNotFoundException::new);
+    public void updateBoardFile(Long boardFileId, MultipartFile file) throws Exception {
+        BoardFile boardFile = boardFileRepository.findById(boardFileId)
+                .orElseThrow(EntityNotFoundException::new);
 
-            //기존 이미지 파일 삭제
-            if(!StringUtils.isEmpty(savedBoardFile.getFileName())) {
-                fileService.deleteFile(boardFileLocation+"/"+
-                        savedBoardFile.getFileName());
-            }
+        String oriFileName = file.getOriginalFilename();
+        String fileName = fileService.uploadFile(boardFileLocation, oriFileName, file.getBytes());
 
-            String oriFileName = multipartFile.getOriginalFilename();
-            String fileName = fileService.uploadFile(boardFileLocation, oriFileName, multipartFile.getBytes());
-            String fileUrl = "/images/board/" + fileName;
-            savedBoardFile.updateBordFile(oriFileName, fileName, fileUrl);
-        }
+        boardFile.setOriFileName(oriFileName);
+        boardFile.setFileName(fileName);
+        boardFile.setFileUrl(boardFileLocation + "/" + fileName);
+
+        boardFileRepository.save(boardFile);
     }
+
 
 }

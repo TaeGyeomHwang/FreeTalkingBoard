@@ -1,13 +1,11 @@
 package com.bamboo.dto;
 
-
 import com.bamboo.entity.Board;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import org.modelmapper.ModelMapper;
 
-import java.lang.management.MemoryManagerMXBean;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,9 +21,17 @@ public class BoardFormDto {
     @NotBlank(message = "내용을 입력해주세요.")
     private String content;
 
-    private List<BoardFileDto> boardFileDtoList = new ArrayList<>();
+    private String hashtag;
 
-    private List<Long> boardFormIds = new ArrayList<>();
+    private boolean isDeleted;
+
+    private List<HashtagDto> hashtags = new ArrayList<>();
+
+    private List<BoardFileDto> boardFileDtoList = new ArrayList<>(); //파일 저장 리스트
+
+    private List<Long> boardFileIds = new ArrayList<>(); //파일 이름 저장 리스트
+
+    private List<HashtagDto> hashtagDtoList = new ArrayList<>();
 
     private static ModelMapper modelMapper = new ModelMapper();
 
@@ -33,7 +39,7 @@ public class BoardFormDto {
         return modelMapper.map(this, Board.class);
     }
 
-    public static BoardFormDto of(Board board){
+    public static BoardFormDto of(Board board) {
         return modelMapper.map(board, BoardFormDto.class);
     }
 

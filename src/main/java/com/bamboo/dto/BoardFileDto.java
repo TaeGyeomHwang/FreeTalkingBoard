@@ -12,13 +12,14 @@ public class BoardFileDto {
     private Long id;
 
     private String fileName;
+
     private String oriFileName;
-    private String fileUrl;
+
+    private String fileUrl; //파일 경로
 
     private static ModelMapper modelMapper = new ModelMapper();
 
     public static BoardFileDto of(BoardFile boardFile) {
         return modelMapper.map(boardFile, BoardFileDto.class);
     }
-
 }

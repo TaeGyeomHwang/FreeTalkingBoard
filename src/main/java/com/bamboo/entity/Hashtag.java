@@ -19,4 +19,5 @@ public class Hashtag {
 
     @Column(name = "hashtag_name", nullable = false)
     private String name;
+
 }

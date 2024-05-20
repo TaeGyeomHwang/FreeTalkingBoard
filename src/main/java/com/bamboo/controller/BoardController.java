@@ -1,7 +1,8 @@
 package com.bamboo.controller;
 
-import com.bamboo.dto.BoardDto;
 import com.bamboo.dto.BoardFormDto;
+import com.bamboo.entity.Board;
+import com.bamboo.repository.BoardRepository;
 import com.bamboo.service.BoardService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -27,24 +27,26 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    @GetMapping(value = "/board/new")
-    public String boardForm(Model model) {
-        model.addAttribute("boardFormDto",  new BoardFormDto());
+    private final BoardRepository boardRepository;
 
+    @GetMapping(value = "/user/board/new")
+    public String boardForm(Model model) {
+        model.addAttribute("boardFormDto", new BoardFormDto());
         return "board/boardForm";
     }
 
-    @PostMapping(value = "/board/new")
+
+    @PostMapping(value = "/user/board/new")
     public String boardNew(@Valid BoardFormDto boardFormDto, BindingResult bindingResult, Model model,
-                           @RequestParam("boardFile")List<MultipartFile> multipartFiles) {
-        if(bindingResult.hasErrors()) {
+                           @RequestParam("boardFile")List<MultipartFile> boardFileList){
+        if(bindingResult.hasErrors()){
             return "board/boardForm";
         }
 
-        try {
-            boardService.saveBoard(boardFormDto, multipartFiles);
+        try{
+            boardService.saveBoard(boardFormDto, boardFileList);
         } catch (Exception e) {
-            model.addAttribute("errorMessage", "글 작성중 에러 발생");
+            model.addAttribute("errorMessage", "글 등록 중 에러");
 
             return "board/boardForm";
         }
@@ -52,14 +54,13 @@ public class BoardController {
         return "redirect:/";
     }
 
-    @GetMapping(value = "/board/{boardId}")
-    private String boardDtl(@PathVariable("boardId") Long itemId, Model model) {
-
-        try{
-            BoardFormDto boardFormDto = boardService.getBoardDtl(itemId);
+    @GetMapping(value = "/user/board/{boardId}")
+    public String boardDtl(@PathVariable("boardId") Long boardId, Model model) {
+        try {
+            BoardFormDto boardFormDto = boardService.getBoardDtl(boardId);
             model.addAttribute("boardFormDto", boardFormDto);
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("errorMessage", "존재하지 않는 글");
+        }catch (EntityNotFoundException e) {
+            model.addAttribute("errorMessage", "존재하지 않는 글입니다.");
             model.addAttribute("boardFormDto", new BoardFormDto());
 
             return "board/boardForm";
@@ -68,20 +69,54 @@ public class BoardController {
         return "board/boardForm";
     }
 
-    @PostMapping(value = "/board/{boardId}")
-    public String boardUpdate(@Valid BoardFormDto boardFormDto, BindingResult bindingResult, @RequestParam("boardFile") List<MultipartFile> multipartFiles, Model model){
+    @PostMapping(value = "user/board/{boardId}")
+    private String boardUpdate(@Valid BoardFormDto boardFormDto, BindingResult bindingResult,
+                               @RequestParam("boardFile") List<MultipartFile> boardFileList, Model model){
 
         if(bindingResult.hasErrors()){
             return "board/boardForm";
         }
 
-        try {
-            boardService.updateBoard(boardFormDto, multipartFiles);
-        } catch (Exception e){
-            model.addAttribute("errorMessage", "글 수정 중 에러가 발생하였습니다.");
+        try{
+            boardService.updateBoard(boardFormDto, boardFileList);
+        }catch (Exception e) {
+            model.addAttribute("errorMessage", "글 수정 중 에러 발생");
+
             return "board/boardForm";
         }
 
         return "redirect:/";
     }
+
+    @GetMapping("/user/boards")
+    public String getBoardPage(Model model, Pageable pageable) {
+        // 한 페이지에 보여줄 항목 수 설정
+        pageable = PageRequest.of(0, 10); // 10개씩 페이지를 구성하도록 설정
+
+        Page<Board> boardPage = boardRepository.findAll(pageable);
+        model.addAttribute("boardPage", boardPage);
+
+        return "main";
+    }
+
+    @GetMapping(value = "/board/{boardId}")
+    public String boardDtl(Model model, @PathVariable("boardId") Long boardId){
+        BoardFormDto boardFormDto = boardService.getBoardDtl(boardId);
+        model.addAttribute("board", boardFormDto);
+
+        return "board/boardDtl";
+    }
+
+//    @GetMapping(value = {"/user/boards", "/user/boards/{page}"})
+//    public String boardMain(BoardSearchDto boardSearchDto, @PathVariable("page")Optional<Integer> page, Model model){
+//
+//        Pageable pageable = PageRequest.of(page.orElse(0),10);
+//
+//        Page<Board> boards = boardService.getBoardPage(boardSearchDto, pageable);
+//        model.addAttribute("boards", boards);
+//        model.addAttribute("boardSearchDto", boardSearchDto);
+//        model.addAttribute("maxPage", 5);
+//
+//        return "main";
+//    }
 }

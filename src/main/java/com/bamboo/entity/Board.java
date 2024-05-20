@@ -1,21 +1,17 @@
 package com.bamboo.entity;
 
-import com.bamboo.dto.BoardFileDto;
 import com.bamboo.dto.BoardFormDto;
 import jakarta.persistence.*;
-import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "board")
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
-public class Board extends BaseTimeEntity{
+public class Board extends BaseEntity{
 
     @Id
     @Column(name = "board_id")
@@ -23,35 +19,26 @@ public class Board extends BaseTimeEntity{
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_email")
-    private Member member; //작성자
-
-    private String writer;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @Column(nullable = false, name = "board_title")
-    private String title; //제목
+    private String title;
 
     @Lob
     @Column(name = "board_content", nullable = false)
-    private String content; //내용
+    private String content;
 
     @Column(name = "board_is_deleted")
     private boolean isDeleted;
 
-    @Column(name = "board_is_restored")
-    private boolean isRestored;
+    private Long good;
 
-    private LocalDateTime regTime;
-
-    private LocalDateTime updateTime;
-
-    private Long good; //좋아요 수
-
-    private Long hit; //조회 수
+    private Long hit;
 
     public void updateBoard(BoardFormDto boardFormDto){
         this.title = boardFormDto.getTitle();
         this.content = boardFormDto.getContent();
     }
-    
+
 }

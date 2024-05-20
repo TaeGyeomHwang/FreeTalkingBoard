@@ -19,7 +19,7 @@ public class BoardFile {
 
     private String oriFileName;
 
-    private String fileUrl;
+    private String fileUrl; //파일 경로
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
