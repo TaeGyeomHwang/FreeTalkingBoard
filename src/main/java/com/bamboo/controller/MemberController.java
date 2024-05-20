@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 
@@ -96,12 +95,12 @@ public class MemberController {
     }
 
     //회원 탈퇴
-    @PostMapping("/withdraw")
+   /* @PostMapping("/withdraw")
     public String withdrawMember(Principal principal, RedirectAttributes redirectAttributes) {
         String email = principal.getName();
         memberService.withdrawMember(email);
         redirectAttributes.addFlashAttribute("message", "탈퇴 되었습니다.");
         return "redirect:/";
-    }
+    }*/
 
 }

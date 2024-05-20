@@ -79,12 +79,12 @@ public class MemberService implements UserDetailsService {
     }
 
     // 회원 탈퇴 메서드
-    public void withdrawMember(String email) {
+   /* public void withdrawMember(String email) {
         Member member = memberRepository.findByEmail(email);
         if (member == null) {
             throw new EntityNotFoundException("회원을 찾을 수 없습니다.");
         }
         member.deleteMember(); // 회원 탈퇴 처리
-    }
+    }*/
 
 }

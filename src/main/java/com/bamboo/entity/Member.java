@@ -45,8 +45,8 @@ public class Member extends BaseTimeEntity {
     }
 
     //회원탈퇴
-    public void deleteMember() {
+    /*public void deleteMember() {
         this.isDeleted = true;
-    }
+    }*/
 
 }
