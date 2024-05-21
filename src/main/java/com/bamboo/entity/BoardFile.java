@@ -8,7 +8,7 @@ import lombok.Setter;
 @Table(name = "board_file")
 @Getter
 @Setter
-public class BoardFile {
+public class BoardFile extends BaseEntity{
 
     @Id
     @Column(name = "board_file_id")

@@ -1,18 +1,19 @@
 package com.bamboo.entity;
 
 import com.bamboo.constant.Role;
+import com.bamboo.dto.MemberFormDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Table(name = "member")
 @Getter
 @Setter
 @ToString
-public class Member extends BaseEntity {
+public class Member extends BaseEntity{
 
     @Id
     @Column(name = "member_id")
@@ -29,6 +30,18 @@ public class Member extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    public static Member createMember(MemberFormDto memberFormDto, PasswordEncoder passwordEncoder) {
+        Member member = new Member();
+
+        member.setName(memberFormDto.getName());
+        member.setEmail(memberFormDto.getEmail());
+        String password = passwordEncoder.encode(memberFormDto.getPassword());
+        member.setPassword(password);
+        member.setRole(Role.USER);
+
+        return member;
+    }
 
 
 }

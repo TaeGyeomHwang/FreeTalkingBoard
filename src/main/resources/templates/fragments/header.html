@@ -2,37 +2,32 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-  <div th:fragment="header">
-    <nav class="navbar navbar-expand-sm bg-primary navbar-dark">
-      <button class="navbar-toggler" type="button" data-toggle="collapse"
-              data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03"
-              aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <a class="navbar-brand" href="/">HOME</a>
+<div th:fragment="header">
+  <nav class="navbar navbar-expand-sm bg-primary navbar-dark">
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03"
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="/">Home</a>
 
-      <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-          <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
-            <a class="nav-link" href="/admin/item/new">게시판 집계</a>
-          </li>
-          <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
-            <a class="nav-link" href="/admin/items">삭제내역 관리</a>
-          </li>
-          <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
-            <a class="nav-link" href="/admin/items">첨부파일 관리</a>
-          </li>
-        </ul>
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item" sec:authorize="isAnonymous()">
-            <a class="nav-link" href="/members/login">로그인</a>
-          </li>
-          <li class="nav-item" sec:authorize="isAuthenticated()">
-            <a class="nav-link" href="/members/logout">로그아웃</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  </div>
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_USER')">
+          <a class="nav-link" href="/user/board/new">글 등록</a>
+        </li>
+        <li class="nav-item" sec:authorize="isAuthenticated()">
+          <a class="nav-link" href="">내 정보</a>
+        </li>
+        <li class="nav-item" sec:authorize="isAnonymous()">
+          <a class="nav-link" href="/members/login">로그인</a>
+        </li>
+        <li class="nav-item" sec:authorize="isAuthenticated()">
+          <a class="nav-link" href="/members/logout">로그아웃</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</div>
 
 </html>

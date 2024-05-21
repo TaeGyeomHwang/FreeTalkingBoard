@@ -25,13 +25,11 @@ public class BoardFormDto {
 
     private boolean isDeleted;
 
-    private List<HashtagDto> hashtags = new ArrayList<>();
-
     private List<BoardFileDto> boardFileDtoList = new ArrayList<>(); //파일 저장 리스트
 
     private List<Long> boardFileIds = new ArrayList<>(); //파일 이름 저장 리스트
 
-    private List<HashtagDto> hashtagDtoList = new ArrayList<>();
+    private List<HashtagDto> hashtagDtoList = new ArrayList<>(); //태그 이름 저장 리스트
 
     private static ModelMapper modelMapper = new ModelMapper();
 

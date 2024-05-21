@@ -22,20 +22,34 @@ public class BoardFileService {
 
     private final FileService fileService;
 
-    public void saveBoardFile(BoardFile boardFile, MultipartFile multipartFile) throws Exception{
+    public void saveBoardFile(BoardFile boardFile, MultipartFile multipartFile) throws Exception {
         String oriFileName = multipartFile.getOriginalFilename();
         String fileName = "";
         String fileUrl = "";
 
-        //파일 업로드
-        if(!StringUtils.isEmpty(oriFileName)){
-            fileName = fileService.uploadFile(boardFileLocation, oriFileName, multipartFile.getBytes());
-            fileUrl = "/files/board/" + fileName;
+        // 파일 업로드
+        if (!StringUtils.isEmpty(oriFileName)) {
+            try {
+                fileName = fileService.uploadFile(boardFileLocation, oriFileName, multipartFile.getBytes());
+                fileUrl = "/files/board/" + fileName;
+                System.out.println("File uploaded successfully: " + fileName);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Error uploading file: " + oriFileName);
+                throw e;
+            }
         }
 
-        //상품 이미지 정보 저장
-        boardFile.updateBordFile(oriFileName, fileName, fileUrl);
-        boardFileRepository.save(boardFile);
+        // 파일 정보 업데이트 및 저장
+        try {
+            boardFile.updateBordFile(oriFileName, fileName, fileUrl);
+            boardFileRepository.save(boardFile);
+            System.out.println("BoardFile saved successfully in database: " + fileName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error saving BoardFile in database: " + oriFileName);
+            throw e;
+        }
     }
 
 

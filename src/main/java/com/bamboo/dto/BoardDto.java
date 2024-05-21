@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class BoardDto {
 
     private Long id;
-    private String writer;
+    private String member; // 작성자 필드 추가
     private String title; //제목
     private String content; //내용
     private Long good; //좋아요 수
@@ -18,4 +18,5 @@ public class BoardDto {
 
     private LocalDateTime regTime;
     private LocalDateTime updateTime;
+
 }

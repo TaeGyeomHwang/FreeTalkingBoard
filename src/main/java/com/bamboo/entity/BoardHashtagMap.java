@@ -10,7 +10,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class BoardHashtagMap {
+public class BoardHashtagMap extends BaseEntity{
 
     @Id
     @Column(name = "board_hashtag_map_id")
@@ -24,4 +24,13 @@ public class BoardHashtagMap {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hashtag_id")
     private Hashtag hashtag;
+
+    public static BoardHashtagMap createBoardHashtagMap(Hashtag hashtag, Board board) {
+        BoardHashtagMap boardHashtagMap = new BoardHashtagMap();
+
+        boardHashtagMap.setHashtag(hashtag);
+        boardHashtagMap.setBoard(board);
+
+        return boardHashtagMap;
+    }
 }

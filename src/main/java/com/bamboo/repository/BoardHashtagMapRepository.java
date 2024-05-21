@@ -10,4 +10,6 @@ public interface BoardHashtagMapRepository extends JpaRepository<BoardHashtagMap
 
     List<BoardHashtagMap> findByBoard(Board board);
 
+    void deleteByBoard(Board board);
+
 }
