@@ -3,14 +3,8 @@ package com.bamboo.service;
 import com.bamboo.dto.BoardDto;
 import com.bamboo.dto.BoardFileDto;
 import com.bamboo.dto.BoardSearchDto;
-import com.bamboo.entity.Board;
-import com.bamboo.entity.BoardFile;
-import com.bamboo.entity.BoardMemberMap;
-import com.bamboo.entity.Member;
-import com.bamboo.repository.BoardFileRepository;
-import com.bamboo.repository.BoardMemberMapRepository;
-import com.bamboo.repository.BoardRepository;
-import com.bamboo.repository.MemberRepository;
+import com.bamboo.entity.*;
+import com.bamboo.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,12 +22,10 @@ import java.util.List;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-
     private final MemberRepository memberRepository;
-
     private final BoardFileRepository boardFileRepository;
-
     private final BoardMemberMapRepository boardMemberMapRepository;
+    private final BoardHashtagMapRepository boardHashtagMapRepository;
 
     private final BoardFileService boardFileService;
 
@@ -84,6 +76,16 @@ public class BoardService {
         return boardDto;
     }
 
+    public List<String> getHashtags(Long boardId){
+        List<Hashtag> hashtagList = boardHashtagMapRepository.findHashtagsByBoardId(boardId);
+        List<String> hashtagNames = new ArrayList<>();
+        for (Hashtag hashtag: hashtagList){
+            String hashtagName = hashtag.getName();
+            hashtagNames.add(hashtagName);
+        }
+        return hashtagNames;
+    }
+
     public void setHit(Long boardId){
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(EntityNotFoundException::new);
@@ -92,26 +94,30 @@ public class BoardService {
         boardRepository.save(board);
     }
 
-    public void setGood(Long boardId, String email) {
+    public boolean setGood(Long boardId, String email) {
         // 이미 좋아요 눌렀는지 확인
-        BoardMemberMap existingLike = boardMemberMapRepository.findByBoardIdAndMemberEmail(boardId, email)
-                .orElseThrow(EntityNotFoundException::new);
-        if (existingLike != null) {
-            throw new IllegalStateException("좋아요는 한 글에 한 번만 가능합니다");
+        boolean exists = boardMemberMapRepository.existsByBoardIdAndMemberEmail(boardId, email);
+        if (exists) {
+            // 레코드가 존재할 때의 로직
+            return false;
+        } else {
+            // 레코드가 존재하지 않을 때의 로직
+            // 매핑 테이블 생성
+            BoardMemberMap like = new BoardMemberMap();
+            Board board = boardRepository.findById(boardId)
+                    .orElseThrow(EntityNotFoundException::new);
+            Member member = memberRepository.findById(email)
+                    .orElseThrow(EntityNotFoundException::new);
+            like.setBoard(board);
+            like.setMember(member);
+            boardMemberMapRepository.save(like);
+
+            // 좋아요 수 증가
+            board.setGood(board.getGood() + 1);
+            boardRepository.save(board);
+            System.out.println("좋아요 수: "+board.getGood());
+
+            return true;
         }
-
-        // 매핑 테이블 생성
-        BoardMemberMap like = new BoardMemberMap();
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(EntityNotFoundException::new);
-        Member member = memberRepository.findById(email)
-                .orElseThrow(EntityNotFoundException::new);
-        like.setBoard(board);
-        like.setMember(member);
-        boardMemberMapRepository.save(like);
-
-        // 좋아요 수 증가
-        board.setGood(board.getGood() + 1);
-        boardRepository.save(board);
     }
 }
