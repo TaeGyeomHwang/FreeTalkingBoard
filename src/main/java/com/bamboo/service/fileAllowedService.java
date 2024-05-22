@@ -27,9 +27,25 @@ public class fileAllowedService {
     private final AllowedFileExtensionsRepository fileExtensionsRepository;
     private final fileAllowedRepository fileAllowedRepository;
 
-    public FileConfig findById(long id){
+//    public FileConfig findById(long id){
+//        return fileAllowedRepository.findById(id)
+//                .orElseThrow(()->new IllegalArgumentException("findById 할 수 없습니다."));
+//    }
+
+    public FileConfig findById(long id) {
         return fileAllowedRepository.findById(id)
-                .orElseThrow(()->new IllegalArgumentException("findById 할 수 없습니다."));
+                .orElseThrow(() -> {
+                    handleNotFound(); // ID를 찾을 수 없을 때 호출할 메서드
+                    return new IllegalArgumentException("findById 할 수 없기 때문에 기본 컬럼을 추가하겠습니다.");
+                });
+    }
+
+    private void handleNotFound() {
+        // ID를 찾을 수 없을 때 수행할 작업을 정의합니다.
+
+        System.out.println("dwoiqjdoiwqjoijfiojeiojeiojwiofjiofjeifjweofij");
+        fileAllowedRepository.defualtfileAllowed();
+        fileExtensionsRepository.defualtExtensions();
     }
 
     public String getExtensionsByFileConfigId(long fileConfigId) {

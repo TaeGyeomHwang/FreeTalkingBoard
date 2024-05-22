@@ -58,7 +58,7 @@
                            th:value="${#authentication.principal.name}">
                     <a href="#" class="nav-link"
                        th:if="${loginType == null}"
-                       th:text="${#authentication.principal.username}"></a>
+                       th:text="${#authentication.getName()}"></a>
                 </li>
                 <li>
                     <a href="/modifyMember" class="nav-link"

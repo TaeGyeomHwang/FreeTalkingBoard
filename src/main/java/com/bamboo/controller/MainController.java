@@ -2,7 +2,9 @@ package com.bamboo.controller;
 
 import com.bamboo.dto.BoardSearchDto;
 import com.bamboo.entity.Board;
+import com.bamboo.entity.FileConfig;
 import com.bamboo.service.BoardService;
+import com.bamboo.service.fileAllowedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +23,8 @@ import java.util.Optional;
 public class MainController {
 
     private final BoardService boardService;
+
+    private final fileAllowedService fileAllowedService;
 
     //  글 목록 조회(메인페이지)
     @GetMapping(value = {"/", "/{page}"})
