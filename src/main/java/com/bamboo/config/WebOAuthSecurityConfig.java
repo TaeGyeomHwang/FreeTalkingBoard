@@ -20,7 +20,7 @@ public class WebOAuthSecurityConfig {
 
     // 토큰 방식으로 인증을 하기 때문에 기존에 사용하던 플러그인, 세션 비활성화
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, MemberService memberService)
+    public SecurityFilterChain filterChain(HttpSecurity http)
             throws Exception {
         //특정 요구사항에 따라 세션 유지
         http
