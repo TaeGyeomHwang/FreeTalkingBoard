@@ -97,12 +97,6 @@ public class MemberApiController {
             return "member/modifyMember"; // 폼 페이지로 돌아가서 오류 메시지 표시
         }
 
-        // 서비스 호출하여 사용자 정보 수정
-        System.out.println("카카오 로그인이면 패스워드가 빈 공백이 넘어와야함");
-        System.out.println(request.getName());
-        System.out.println(request.getPassword());
-        System.out.println(request.getEmail());
-
         memberService.modifyMember(request.getName(), request.getPassword(), request.getEmail());
 
         return "redirect:/logout"; // 로그인 페이지로 리다이렉트
