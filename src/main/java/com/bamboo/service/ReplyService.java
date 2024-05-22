@@ -39,23 +39,23 @@ public class ReplyService {
     //  댓글 저장
     public Long saveReply(String email, Long boardId, ReplyFormDto replyFormDto){
         //  테스트용 코드
-        Member member1 = new Member();
-        member1.setEmail(email);
-        member1.setName("홍길동");
-        String password = passwordEncoder.encode("1234");
-        member1.setPassword(password);
-        member1.setRole(Role.ADMIN);
-        memberRepository.save(member1);
-        Board board1 = new Board();
-        board1.setMember(member1);
-        board1.setTitle("테스트 제목");
-        board1.setContent("테스트 내용");
-        board1.setDeleted(false);
-        board1.setRestored(false);
-        board1.setGood(0L);
-        board1.setHit(0L);
-        boardRepository.save(board1);
-        System.out.println(board1.getId());
+//        Member member1 = new Member();
+//        member1.setEmail(email);
+//        member1.setName("홍길동");
+//        String password = passwordEncoder.encode("1234");
+//        member1.setPassword(password);
+//        member1.setRole(Role.ADMIN);
+//        memberRepository.save(member1);
+//        Board board1 = new Board();
+//        board1.setMember(member1);
+//        board1.setTitle("테스트 제목");
+//        board1.setContent("테스트 내용");
+//        board1.setDeleted(false);
+//        board1.setRestored(false);
+//        board1.setGood(0L);
+//        board1.setHit(0L);
+//        boardRepository.save(board1);
+//        System.out.println(board1.getId());
 
         Reply reply = replyFormDto.createReply();
         // 디버깅 로그 출력
