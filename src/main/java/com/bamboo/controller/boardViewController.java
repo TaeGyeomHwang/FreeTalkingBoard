@@ -7,6 +7,7 @@ import com.bamboo.service.MultipartConfigService;
 import com.bamboo.service.fileAllowedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequiredArgsConstructor
 @Controller
 public class boardViewController {
+
 
     @Autowired
     private MultipartConfigService multipartConfigService;
@@ -30,6 +32,15 @@ public class boardViewController {
 
         FileConfig fileConfig = fileAllowedService.findById(1L);
         String extensions = fileAllowedService.getExtensionsByFileConfigId(1L);
+
+
+        if(fileConfig == null){
+            fileConfig.setId(1L);
+            fileConfig.setMaxFileSize(20L);  // 프로퍼티스에서 가져온 값
+            fileConfig.setMaxFileCount(10L); //파일 최대 갯수의 디폴트는 10개
+            extensions = "jpg";
+
+        }
         model.addAttribute("extensions", extensions);
         model.addAttribute("allowed",fileConfig);
         model.addAttribute("loginType",MyOAuth2MemberService.loginType);
