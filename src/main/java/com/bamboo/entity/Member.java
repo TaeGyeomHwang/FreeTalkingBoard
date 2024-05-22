@@ -17,13 +17,15 @@ import static com.bamboo.config.oauth.MyOAuth2MemberService.loginType;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Member extends BaseTimeEntity implements UserDetails {
+    //@NoArgsConstructor(access = AccessLevel.PROTECTED)
+
     @Column(name = "id",updatable = false)
     private Long id;
 
     @Id
-    @Column(name = "member_email", unique = true)
+    @Column(name = "member_email")
     private String email;
 
     @Column(name = "member_name")
