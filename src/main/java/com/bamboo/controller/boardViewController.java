@@ -28,7 +28,6 @@ public class boardViewController {
 
         multipartConfigService.updateMaxUploadSize(maxFile.getMaxFileSize(), 300L);
 
-
         FileConfig fileConfig = fileAllowedService.findById(1L);
         String extensions = fileAllowedService.getExtensionsByFileConfigId(1L);
         model.addAttribute("extensions", extensions);
@@ -36,7 +35,6 @@ public class boardViewController {
         model.addAttribute("loginType",MyOAuth2MemberService.loginType);
 
         return "fileAllowed";
-
     }
 
     @GetMapping("/")

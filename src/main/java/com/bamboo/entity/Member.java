@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+import static com.bamboo.config.oauth.MyOAuth2MemberService.loginType;
+
 @Entity
 @Table(name = "member")
 @Getter
@@ -43,6 +45,14 @@ public class Member extends BaseTimeEntity implements UserDetails {
         this.role = role;
     }
 
+    public void updateMemberInfo(String name, String password){
+        if(loginType == null){
+            this.name = name;
+            this.password = password;
+        }else{
+            this.name = name;
+        }
+    }
 
     public void updateDeleted(boolean isDeleted){
         this.isDeleted = isDeleted;

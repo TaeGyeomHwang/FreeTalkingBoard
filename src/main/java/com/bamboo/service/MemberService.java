@@ -7,11 +7,11 @@ import com.bamboo.dto.MemberFormDto;
 import com.bamboo.entity.Member;
 import com.bamboo.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -50,6 +50,20 @@ public class MemberService {
                 .orElseThrow(()-> new IllegalArgumentException("정지할 이메일을 찾을 수 없습니다."));
 
         memberRepository.deletedEmail(email);
+        return member;
+    }
+
+
+    @Transactional
+    public Member modifyMember(String name, String password, String email){
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(()-> new IllegalArgumentException("수정할 계정 정보를 찾을 수 없습니다."));
+
+
+        //사용자의 이름과 비밀번호 수정
+        member.updateMemberInfo(name,bCryptPasswordEncoder.encode(password));
+
         return member;
     }
 

@@ -18,7 +18,7 @@
             <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
 
                 <li class="nav-item"
-                    sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
+                    sec:authorize="hasAnyAuthority('ROLE_USER')">
                     <a class="nav-link" href="#">게시판 집계</a>
                 </li>
 
@@ -48,20 +48,20 @@
 
                 <li class="nav-item" sec:authorize="isAuthenticated()">
                     <input type="hidden" class="nav-link"
-                       th:if="${loginType != null}"
-                       th:value="${#authentication.principal.attributes['kakao_account']['email']}">
+                           th:if="${loginType != null}"
+                           th:value="${#authentication.principal.attributes['properties']['nickname']}">
                     <a href="#" class="nav-link"
                        th:if="${loginType != null}"
-                       th:text="${#authentication.principal.attributes['properties']['nickname']}"></a>
+                       th:text="${#authentication.principal.attributes['kakao_account']['email']}"></a>
                     <input type="hidden" class="nav-link"
-                       th:if="${loginType == null}"
-                       th:value="${#authentication.principal.username}">
+                           th:if="${loginType == null}"
+                           th:value="${#authentication.principal.name}">
                     <a href="#" class="nav-link"
                        th:if="${loginType == null}"
-                       th:text="${#authentication.principal.name}"></a>
+                       th:text="${#authentication.principal.username}"></a>
                 </li>
                 <li>
-                    <a href="#" class="nav-link"
+                    <a href="/modifyMember" class="nav-link"
                        sec:authorize="isAuthenticated()">[내 정보]</a>
                 </li>
 
