@@ -79,7 +79,10 @@ public class BoardController {
             return "board/boardForm";
         }
         try {
-            boardService.saveBoard("test@test.com",boardDto, boardFileList);
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            Authentication authentication = securityContext.getAuthentication();
+            String email = authentication.getName();
+            boardService.saveBoard(email, boardDto, boardFileList);
         } catch (Exception e){
             model.addAttribute("errorMessage", "게시글 등록 중 에러가 발생하였습니다.");
             return "board/boardForm";
@@ -87,7 +90,7 @@ public class BoardController {
 
         return "redirect:/";
     }
-    
+
     //  게시글 삭제 post 요청
     @PostMapping(value = "/boards/delete")
     public String boardDelete(@RequestParam("boardId") Long boardId, RedirectAttributes redirectAttributes){
@@ -104,17 +107,16 @@ public class BoardController {
             return "redirect:/boards/" + boardId;
         }
     }
-    
+
     //  게시글 좋아요 get 요청
     @GetMapping(value = "/boards/good/{boardId}")
     public String boardGood(@PathVariable("boardId") Long boardId, RedirectAttributes redirectAttributes, Model model) {
         try {
-            //            SecurityContext securityContext = SecurityContextHolder.getContext();
-//            Authentication authentication = securityContext.getAuthentication();
-//            String email = authentication.getName();
-//            boardService.setGood(boardId, email);
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            Authentication authentication = securityContext.getAuthentication();
+            String email = authentication.getName();
             System.out.println("좋아요 요청: " + boardId);
-            Boolean isTrue = boardService.setGood(boardId, "test@test.com");
+            Boolean isTrue = boardService.setGood(boardId, email);
             if (!isTrue){
                 System.out.println("좋아요는 한 게시글당 한 번만 누를 수 있습니다.");
                 redirectAttributes.addFlashAttribute("errorMessage", "좋아요는 한 게시글당 한 번만 누를 수 있습니다.");
@@ -145,8 +147,7 @@ public class BoardController {
 
             System.out.println("댓글 등록 시작");
 //            로그인 정보 가져와서 댓글 등록
-//            replyService.saveReply(email, boardId, replyFormDto);
-            replyService.saveReply("test@test.com", boardId, replyFormDto);
+            replyService.saveReply(email, boardId, replyFormDto);
         }catch (Exception e) {
             System.out.println("에러 메시지:"+e.getMessage());
             model.addAttribute("errorMessage", "댓글 등록 중 에러가 발생하였습니다.");
@@ -187,8 +188,7 @@ public class BoardController {
 
             System.out.println("대댓글 등록 시작");
 //            로그인 정보 가져와서 대댓글 등록
-//            reReplyService.saveReReply(email, boardId, replyFormDto);
-            reReplyService.saveReReply("test@test.com", boardId, replyFormDto);
+            reReplyService.saveReReply(email, boardId, replyFormDto);
         }catch (Exception e) {
             System.out.println("댓글 삭제 에러 메시지:"+e.getMessage());
             model.addAttribute("errorMessage", "대댓글 등록 중 에러가 발생하였습니다.");

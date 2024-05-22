@@ -37,12 +37,12 @@ public class boardViewController {
         return "fileAllowed";
     }
 
-    @GetMapping("/")
-    public String getPage(Model model){
-
-        model.addAttribute("loginType",MyOAuth2MemberService.loginType);
-        return "mainPage";
-    }
+//    @GetMapping("/")
+//    public String getPage(Model model){
+//
+//        model.addAttribute("loginType",MyOAuth2MemberService.loginType);
+//        return "mainPage";
+//    }
 
     @GetMapping("/1")
     public String getPage2(Model model){

@@ -39,8 +39,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     testImplementation 'org.springframework.security:spring-security-test'
     //프로퍼티스 설정 변경을 위한 의존성 추가
-    implementation 'org.springframework.cloud:spring-cloud-config-server'
-    implementation 'org.springframework.cloud:spring-cloud-config-client'
+//    implementation 'org.springframework.cloud:spring-cloud-config-server'
+//    implementation 'org.springframework.cloud:spring-cloud-config-client'
 
     //계정 유효성 검사를 위한 의존성 추가
     implementation 'org.springframework.boot:spring-boot-starter-validation'

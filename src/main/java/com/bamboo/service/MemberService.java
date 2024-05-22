@@ -17,14 +17,14 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public Long save(MemberFormDto dto){
+    public Member save(MemberFormDto dto){
         return memberRepository.save(Member.builder()
                 .email(dto.getEmail())
                 .name(dto.getName())
                 //패스워드 암호화
                 .password(bCryptPasswordEncoder.encode(dto.getPassword()))
                 .role(Role.USER)
-                .build()).getId();
+                .build());
     }
 
     public Member findByEmail(String email){

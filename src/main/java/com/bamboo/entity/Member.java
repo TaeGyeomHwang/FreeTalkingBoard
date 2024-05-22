@@ -21,8 +21,8 @@ import static com.bamboo.config.oauth.MyOAuth2MemberService.loginType;
 public class Member extends BaseTimeEntity implements UserDetails {
     //@NoArgsConstructor(access = AccessLevel.PROTECTED)
 
-    @Column(name = "id",updatable = false)
-    private Long id;
+//    @Column(name = "id",updatable = false)
+//    private Long id;
 
     @Id
     @Column(name = "member_email")
