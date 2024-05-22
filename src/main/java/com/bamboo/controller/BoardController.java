@@ -1,5 +1,6 @@
 package com.bamboo.controller;
 
+import com.bamboo.config.oauth.MyOAuth2MemberService;
 import com.bamboo.dto.BoardDto;
 import com.bamboo.dto.ReReplyDto;
 import com.bamboo.dto.ReplyDto;
@@ -51,6 +52,7 @@ public class BoardController {
             model.addAttribute("rereplys", reReplyDtos);
             model.addAttribute("boardId",boardId);
             model.addAttribute("replyFormDto", new ReplyFormDto());
+            model.addAttribute("loginType", MyOAuth2MemberService.loginType);
         }catch (EntityNotFoundException e) {
             model.addAttribute("errorMessage", "존재하지 않는 게시글 입니다.");
             model.addAttribute("boardDto", new BoardDto());
@@ -59,6 +61,7 @@ public class BoardController {
             model.addAttribute("rereplys", new ArrayList<>());
             model.addAttribute("boardId", boardId);
             model.addAttribute("replyFormDto", new ReplyFormDto());
+            model.addAttribute("loginType", MyOAuth2MemberService.loginType);
             return "board/boardDtl";
         }
         return "board/boardDtl";
@@ -68,6 +71,7 @@ public class BoardController {
     @GetMapping(value = "/boards/create")
     public String newBoard(Model model){
         model.addAttribute("boardDto", new BoardDto());
+        model.addAttribute("loginType", MyOAuth2MemberService.loginType);
         return "board/boardForm";
     }
 

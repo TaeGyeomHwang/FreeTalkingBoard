@@ -55,10 +55,10 @@ public class boardViewController {
 //        return "mainPage";
 //    }
 
-    @GetMapping("/1")
-    public String getPage2(Model model){
-
-        model.addAttribute("loginType",MyOAuth2MemberService.loginType);
-        return "testHtml";
-    }
+//    @GetMapping("/1")
+//    public String getPage2(Model model){
+//
+//        model.addAttribute("loginType",MyOAuth2MemberService.loginType);
+//        return "testHtml";
+//    }
 }

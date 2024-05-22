@@ -1,5 +1,6 @@
 package com.bamboo.controller;
 
+import com.bamboo.config.oauth.MyOAuth2MemberService;
 import com.bamboo.dto.BoardSearchDto;
 import com.bamboo.entity.Board;
 import com.bamboo.service.BoardService;
@@ -41,6 +42,7 @@ public class MainController {
         model.addAttribute("boards", boards);
         model.addAttribute("boardSearchDto", boardSearchDto);
         model.addAttribute("maxPage", 10);
+        model.addAttribute("loginType", MyOAuth2MemberService.loginType);
 
         return "board/boards";
     }

@@ -18,7 +18,7 @@
             <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
 
                 <li class="nav-item"
-                    sec:authorize="hasAnyAuthority('ROLE_USER')">
+                    sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
                     <a class="nav-link" href="#">게시판 집계</a>
                 </li>
 
@@ -55,10 +55,10 @@
                        th:text="${#authentication.principal.attributes['kakao_account']['email']}"></a>
                     <input type="hidden" class="nav-link"
                            th:if="${loginType == null}"
-                           th:value="${#authentication.principal.name}">
+                           th:value="${#authentication.getName()}">
                     <a href="#" class="nav-link"
                        th:if="${loginType == null}"
-                       th:text="${#authentication.principal.username}"></a>
+                       th:text="${#authentication.getName()} + '님'"></a>
                 </li>
                 <li>
                     <a href="/modifyMember" class="nav-link"
