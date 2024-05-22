@@ -38,6 +38,8 @@ public class MainController {
             boards = boardService.getBoardPage(boardSearchDto, pageable);
         }
 
+
+
         model.addAttribute("boards", boards);
         model.addAttribute("boardSearchDto", boardSearchDto);
         model.addAttribute("maxPage", 10);
