@@ -34,6 +34,7 @@ public class BoardController {
     private final ReplyService replyService;
     private final ReReplyService reReplyService;
 
+    //  게시글 상세 조회
     @GetMapping(value = "/boards/{boardId}")
     public String boardDtl(@PathVariable("boardId") Long boardId, Model model){
         try{
@@ -63,12 +64,14 @@ public class BoardController {
         return "board/boardDtl";
     }
 
+    //  게시글 작성 페이지
     @GetMapping(value = "/boards/create")
     public String newBoard(Model model){
         model.addAttribute("boardDto", new BoardDto());
         return "board/boardForm";
     }
 
+    //  게시글 등록 post 요청
     @PostMapping(value = "/boards/create")
     public String boardNew(BoardDto boardDto, BindingResult bindingResult,
                            Model model, @RequestParam("boardFiles") List<MultipartFile> boardFileList){
@@ -84,7 +87,25 @@ public class BoardController {
 
         return "redirect:/";
     }
-
+    
+    //  게시글 삭제 post 요청
+    @PostMapping(value = "/boards/delete")
+    public String boardDelete(@RequestParam("boardId") Long boardId, RedirectAttributes redirectAttributes){
+        try {
+            System.out.println("게시글 삭제 시작");
+            boardService.cancelBoard(boardId);
+            // 삭제 성공 시
+            redirectAttributes.addFlashAttribute("successMessage", "게시글이 성공적으로 삭제되었습니다.");
+            return "redirect:/";
+        } catch (Exception e) {
+            // 삭제 실패 시
+            System.out.println("삭제 에러 메시지:"+e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "게시글 삭제 중 오류가 발생했습니다. 다시 시도해주세요.");
+            return "redirect:/boards/" + boardId;
+        }
+    }
+    
+    //  게시글 좋아요 get 요청
     @GetMapping(value = "/boards/good/{boardId}")
     public String boardGood(@PathVariable("boardId") Long boardId, RedirectAttributes redirectAttributes, Model model) {
         try {
@@ -110,7 +131,7 @@ public class BoardController {
         return "redirect:/boards/" + boardId;
     }
 
-    //  댓글 등록하기
+    //  댓글 등록 post 요청
     @PostMapping(value = "/boards/comments/new")
     public String replyNew(@Valid ReplyFormDto replyFormDto, @RequestParam("boardId") Long boardId, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){
@@ -135,7 +156,7 @@ public class BoardController {
         return "redirect:/boards/" + boardId;
     }
 
-    // 댓글 삭제하기
+    // 댓글 삭제 post 요청
     @PostMapping(value = "/boards/comments/delete")
     public String replyDelete(@RequestParam("replyId") Long replyId, @RequestParam("boardId") Long boardId, RedirectAttributes redirectAttributes){
         try {
@@ -152,7 +173,7 @@ public class BoardController {
         }
     }
 
-    //  대댓글 등록하기
+    //  대댓글 등록 post 요청
     @PostMapping(value = "/boards/comments/new/rereply")
     public String reReplyNew(@Valid ReplyFormDto replyFormDto, @RequestParam("boardId") Long boardId, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){
@@ -177,7 +198,7 @@ public class BoardController {
         return "redirect:/boards/" + boardId;
     }
 
-    //  대댓글 삭제하기
+    //  대댓글 삭제 post 요청
     @PostMapping(value = "/boards/comments/delete/rereply")
     public String reReplyDelete(@RequestParam("rereplyId") Long reReplyId, @RequestParam("boardId") Long boardId, RedirectAttributes redirectAttributes){
         try {

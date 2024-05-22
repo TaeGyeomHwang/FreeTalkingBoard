@@ -120,4 +120,11 @@ public class BoardService {
             return true;
         }
     }
+
+    public void cancelBoard(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(EntityNotFoundException::new);
+        board.setDeleted(true);
+        boardRepository.save(board);
+    }
 }

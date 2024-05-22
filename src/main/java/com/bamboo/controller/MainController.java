@@ -22,6 +22,7 @@ public class MainController {
 
     private final BoardService boardService;
 
+    //  글 목록 조회(메인페이지)
     @GetMapping(value = {"/", "/{page}"})
     public String boards(BoardSearchDto boardSearchDto, @PathVariable("page") Optional<Integer> page,
                          @RequestParam(value = "sort", required = false) String sort,
