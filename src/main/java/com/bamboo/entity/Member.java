@@ -48,12 +48,14 @@ public class Member extends BaseTimeEntity implements UserDetails {
     }
 
     public void updateMemberInfo(String name, String password){
-        if(loginType == null){
-            this.name = name;
-            this.password = password;
-        }else{
-            this.name = name;
-        }
+//        if(loginType == null){
+//            this.name = name;
+//            this.password = password;
+//        }else{
+//            this.name = name;
+//        }
+        this.name = name;
+        this.password = password;
     }
 
     public void updateDeleted(boolean isDeleted){

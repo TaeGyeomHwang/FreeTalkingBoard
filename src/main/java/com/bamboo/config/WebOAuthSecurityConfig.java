@@ -31,7 +31,7 @@ public class WebOAuthSecurityConfig {
         // 토큰 재발급 URL은 인증 없이 접근 가능하도록 설정. 나머지 API URL은 인증 필요.
         http.authorizeRequests(authorize -> authorize
                         .requestMatchers("/login","/signup", "/css/**","/user",
-                                "/js/**","/img/**","/")
+                                "/js/**","/img/**","/","/check")
                         .permitAll() // 해당 html 페이지들은 로그인 하지 않아도 접속 가능
                         .requestMatchers("/articleList","/api/**","/testAllowed","/modifyMember")
                         .authenticated()  //권한 필요
