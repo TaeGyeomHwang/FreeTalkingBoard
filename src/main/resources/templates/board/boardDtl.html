@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      layout:decorate="~{layouts/layout1}">
+      layout:decorate="~{layouts/layout1}"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 
 <!-- 사용자 스크립트 추가 -->
 <th:block layout:fragment="script">
@@ -38,24 +39,28 @@
     </script>
 </th:block>
 
-<div layout:fragment="content" style="margin-left: 25%; margin-right: 25%">
 
+
+<div layout:fragment="content" style="margin-left: 25%; margin-right: 25%">
+    <script src="/js/deleteUser.js"></script>
     <input type="hidden" id="boardId" th:value="${boardDto.id}">
 
-    <div class="h3 d-flex justify-content-between">
-        <p th:text="${boardDto.title}"/>
-        <form action="/boards/block" method="post" style="display:inline;"
-              sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
-            <input type="hidden" name="userEmail" th:value="${boardDto.member.email}">
-            <button type="submit" class="btn btn-outline-danger btn-sm">유저 차단하기</button>
-        </form>
-    </div>
-
-    <div class="h4 text-left">
-        <small th:text="${boardDto.member.name}"></small><small> | </small>
-        <small th:text="${#temporals.format(boardDto.regTime, 'yy.MM.dd HH:mm:ss')}"></small><small> |
-        조회수 </small>
-        <small th:text="${boardDto.hit}"></small>
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <div class="h3">
+                <p th:text="${boardDto.title}"/>
+            </div>
+            <div class="h4 text-left">
+                <small th:text="${boardDto.member.name}"></small><small> | </small>
+                <small th:text="${#temporals.format(boardDto.regTime, 'yy.MM.dd HH:mm:ss')}"></small><small> | 조회수 </small>
+                <small th:text="${boardDto.hit}"></small>
+            </div>
+        </div>
+        <div sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
+            <button type="button" class="btn btn-outline-secondary"
+                    id="delete-user">계정 정지</button>
+            <input type="hidden" id="userEmails" th:value="${boardDto.member.email}">
+        </div>
     </div>
     <hr class="my-4">
 
