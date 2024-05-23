@@ -27,11 +27,9 @@ public class MemberService {
                 .build());
     }
 
-    public Member findByEmail(String email){
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("유저의 이메일을 찾을 수 없습니다."));
+    public boolean findByEmail(String email){
+        return memberRepository.existsByEmail(email);
     }
-
 
     public Member kakaoSave(String email, String nickname){
         Member user = memberRepository.findByEmail(email)
@@ -55,9 +53,10 @@ public class MemberService {
     @Transactional
     public Member modifyMember(String name, String password, String email){
 
+        System.out.println("이게 이메일 정보다 이말이야 :  "+email);
+
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(()-> new IllegalArgumentException("수정할 계정 정보를 찾을 수 없습니다."));
-
 
         //사용자의 이름과 비밀번호 수정
         member.updateMemberInfo(name,bCryptPasswordEncoder.encode(password));
