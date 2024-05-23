@@ -218,7 +218,7 @@ public class BoardController {
         }catch (Exception e) {
             System.out.println("댓글 삭제 에러 메시지:"+e.getMessage());
             model.addAttribute("errorMessage", "대댓글 등록 중 에러가 발생하였습니다.");
-            return "reply/test";
+            return "redirect:/boards/" + boardId;
         }
 
         return "redirect:/boards/" + boardId;
@@ -237,7 +237,7 @@ public class BoardController {
             // 삭제 실패 시
             System.out.println("대댓글 삭제 에러 메시지:"+e.getMessage());
             redirectAttributes.addFlashAttribute("errorMessage", "대댓글 삭제 중 오류가 발생했습니다. 다시 시도해주세요.");
-            return "reply/test";
+            return "redirect:/boards/" + boardId;
         }
     }
 
