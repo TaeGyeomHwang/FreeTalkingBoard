@@ -13,8 +13,9 @@
     </style>
 
     <script>
-            function showAlert() {
+        function showAlertAndRedirect() {
             alert("프로필이 성공적으로 업데이트되었습니다. 다시 로그인 하세요!");
+            window.location.href = "/logout"; // 로그아웃 페이지로 리다이렉트
         }
     </script>
     </script>
@@ -26,6 +27,15 @@
 <br><br><br><br><br><br><br><br><br>
 <div class="container">
     <h2>내 정보 수정</h2>
+
+    <!-- 알림 표시 -->
+    <div th:if="${success}">
+        <script>
+            showAlertAndRedirect();
+        </script>
+    </div>
+
+
 
     <form th:action="@{/modifyMember}" method="POST" th:object="${MemberFormDto}">
         <div class="form-group">

@@ -77,7 +77,8 @@ public class MemberApiController {
 
     }
     @PostMapping("/modifyMember")
-    public String modifyMember(@ModelAttribute("MemberFormDto") MemberFormDto request, BindingResult bindingResult) {
+    public String modifyMember(@ModelAttribute("MemberFormDto") MemberFormDto request, BindingResult bindingResult,
+    RedirectAttributes redirectAttributes) {
 
         // 유효성 검사
         if (request.getName().length() < 3 || request.getName().length() > 8) {
@@ -99,7 +100,9 @@ public class MemberApiController {
 
         memberService.modifyMember(request.getName(), request.getPassword(), request.getEmail());
 
-        return "redirect:/logout"; // 로그인 페이지로 리다이렉트
+        redirectAttributes.addFlashAttribute("success", true);
+
+        return "redirect:/modifyMember"; // 로그인 페이지로 리다이렉트
     }
 }
 
