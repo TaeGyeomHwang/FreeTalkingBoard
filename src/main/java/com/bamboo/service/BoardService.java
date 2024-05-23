@@ -56,6 +56,22 @@ public class BoardService {
         return board.getId();
     }
 
+
+    public Long updateBoard(Long boardId, BoardDto boardDto, List<MultipartFile> boardFileList) throws Exception {
+        System.out.println("서비스 게시글 수정 시작");
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(EntityNotFoundException::new);
+        board.setTitle(boardDto.getTitle());
+        board.setContent(boardDto.getContent());
+        for(int i=0;i<boardFileList.size();i++){
+            BoardFile boardFile = new BoardFile();
+            boardFile.setBoard(board);
+
+            boardFileService.saveBoardFile(boardFile, boardFileList.get(i));
+        }
+        return board.getId();
+    }
+
     @Transactional(readOnly = true)
     public BoardDto getBoardDtl(Long boardId){
         List<BoardFile> boardFileList = boardFileRepository.findAllByBoardIdOrderByIdAsc(boardId);
@@ -127,4 +143,5 @@ public class BoardService {
         board.setDeleted(true);
         boardRepository.save(board);
     }
+
 }

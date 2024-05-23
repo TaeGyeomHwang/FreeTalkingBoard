@@ -41,8 +41,16 @@
 
     <input type="hidden" id="boardId" th:value="${boardDto.id}">
 
-    <div class="h3">
+    <div class="h3 d-flex justify-content-between">
         <p th:text="${boardDto.title}"/>
+        <th:block
+                th:if="${#authentication.getAuthorities().contains(T(com.bamboo.constant.Role).ADMIN)}">
+            <form action="
+        /boards/block" method="post" style="display:inline;">
+                <input type="hidden" name="userEmail" th:value="${boardDto.member.email}">
+                <button type="button" class="btn btn-outline-danger btn-sm">유저 차단하기</button>
+            </form>
+        </th:block>
     </div>
     <div class="h4 text-left">
         <small th:text="${boardDto.member.name}"></small><small> | </small>
