@@ -102,6 +102,22 @@ public class BoardController {
         return "redirect:/";
     }
 
+    //  게시글 수정 페이지 접속
+    @PostMapping(value = "/boards/update")
+    public String boardUpdate(@RequestParam("boardId") Long boardId, Model model){
+        try {
+            BoardDto boardDto = boardService.getBoardDtl(boardId);
+            model.addAttribute("boardDto", boardDto);
+            List<String> hashtags = boardService.getHashtags(boardId);
+            model.addAttribute("hashtags", hashtags);
+        } catch(EntityNotFoundException e){
+            model.addAttribute("errorMessage", "존재하지 않는 글 입니다.");
+            model.addAttribute("itemFormDto", new BoardDto());
+            return "board/boardForm";
+        }
+        return "board/boardForm";
+    }
+
     //  게시글 삭제 post 요청
     @PostMapping(value = "/boards/delete")
     public String boardDelete(@RequestParam("boardId") Long boardId, RedirectAttributes redirectAttributes){
