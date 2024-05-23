@@ -1,8 +1,6 @@
 const modifyAllowed = document.getElementById("modify-file-Config");
 const deleteUser = document.getElementById("delete-user");
 
-
-
 if(deleteUser){
     deleteUser.addEventListener("click",(event) => {
         fetch("/deleteMember",{
@@ -19,7 +17,6 @@ if(deleteUser){
         });
     });
 }
-
 
 if(modifyAllowed){
     modifyAllowed.addEventListener("click",(event) => {
@@ -68,5 +65,3 @@ tagify.on('add', function() { //태그를 추가했을 시 발생하는 이벤�
 
     console.log(valuesArray);
 });
-
-

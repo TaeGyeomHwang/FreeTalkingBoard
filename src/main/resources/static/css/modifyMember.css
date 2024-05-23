@@ -54,6 +54,22 @@ input[type="text"]:focus {
     box-shadow: 0 0 8px rgba(252, 182, 159, 0.3);
 }
 
+input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+input[type="password"]:focus {
+    border-color: #fcb69f;
+    outline: none;
+    box-shadow: 0 0 8px rgba(252, 182, 159, 0.3);
+}
+
 button {
     width: 100%;
     padding: 14px;

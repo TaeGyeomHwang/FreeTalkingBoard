@@ -25,6 +25,7 @@
 <body>
 <div th:replace="fragments/header :: header"></div>
 <br><br><br><br><br><br><br><br><br>
+
 <div class="container">
     <h2>내 정보 수정</h2>
 
@@ -40,21 +41,17 @@
     <form th:action="@{/modifyMember}" method="POST" th:object="${MemberFormDto}">
         <div class="form-group">
             <label for="modifyName">이름</label>
-            <input type="text" id="modifyName" name="name" placeholder="새로운 이름을 입력하세요." required>
+            <input type="text" id="modifyName" name="name" placeholder="새로운 이름을 입력하세요.1" required>
             <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="fieldError">Incorrect data</p>
         </div>
-        <div class="form-group" th:if="${loginType != null}">
-            <input type="hidden" name="password">
-            <input type="hidden" name="confirmPassword">
-        </div>
-        <div class="form-group" th:if="${loginType == null}">
+        <div class="form-group">
             <label for="modifyPassword">비밀번호</label>
-            <input type="text" id="modifyPassword" name="password" placeholder="새로운 비밀번호을 입력하세요." required>
+            <input type="password" id="modifyPassword" name="password" placeholder="새로운 비밀번호을 입력하세요." required>
             <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="fieldError">Incorrect data</p>
         </div>
-        <div class="form-group" th:if="${loginType == null}">
+        <div class="form-group">
             <label for="confirmModifyPassword">비밀번호 확인</label>
-            <input type="text" id="confirmModifyPassword" name="confirmPassword" placeholder="비밀번호를 한번 더 입력하세요." required>
+            <input type="password" id="confirmModifyPassword" name="confirmPassword" placeholder="비밀번호를 한번 더 입력하세요." required>
             <p th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}" class="fieldError">Incorrect data</p>
         </div>
 
@@ -67,7 +64,7 @@
         <input type="hidden"
                th:if="${loginType == null}"
                name="email"
-               th:value="${#authentication.principal.username}">
+               th:value="${#authentication.getName()}">
 
         <button type="submit" onclick="showAlert()">Update</button>
 
