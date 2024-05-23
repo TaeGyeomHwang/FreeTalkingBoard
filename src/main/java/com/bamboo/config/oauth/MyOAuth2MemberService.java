@@ -22,6 +22,7 @@ import java.util.Set;
 public class MyOAuth2MemberService extends DefaultOAuth2UserService {
     private final MemberService memberService;
     public static String loginType = null;
+    public static String userEmail = "";
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -36,7 +37,7 @@ public class MyOAuth2MemberService extends DefaultOAuth2UserService {
 
         Map<String,String> responseMap = (Map<String,String>) oAuth2User.getAttributes().get("kakao_account");
 
-        String userEmail =responseMap.get("email");
+        userEmail =responseMap.get("email");
 
         Map<String,String> properties = (Map<String,String>) oAuth2User.getAttributes().get("properties");
         String userNickname = properties.get("nickname");
