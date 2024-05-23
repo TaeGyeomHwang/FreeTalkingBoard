@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    const restoreButtons = document.querySelectorAll(".btn-primary");
+    const restoreButtons = document.querySelectorAll(".restore-button");
 
     restoreButtons.forEach(button => {
         button.addEventListener("click", function (event) {
