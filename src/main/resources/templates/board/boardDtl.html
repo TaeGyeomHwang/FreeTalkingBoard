@@ -56,30 +56,34 @@
         <div class="container">
             <p class="lead" th:text="${boardDto.content}"></p>
             <div th:each="boardFile : ${boardDto.boardFileDtoList}" class="text-center">
-                <th:block th:if="${#strings.endsWith(boardFile.oriFileName,'')}">
+                <th:block th:if="${#strings.isEmpty(boardFile.oriFileName)}">
+                    <!-- empty or null일 경우 -->
                 </th:block>
-                <th:block th:if="${#strings.endsWith(boardFile.oriFileName.toLowerCase(), '.jpeg')
-                              or #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.jpg')
-                              or #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.png')
-                              or #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.gif')}">
+                <th:block th:if="${#strings.length(boardFile.oriFileName) > 0 and
+                                 (#strings.endsWith(boardFile.oriFileName.toLowerCase(), '.jpeg') or
+                                  #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.jpg') or
+                                  #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.png') or
+                                  #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.gif'))}">
                     <img th:src="${boardFile.fileUrl}" th:alt="${boardFile.oriFileName}" style="max-width: 100%;">
                 </th:block>
-                <th:block th:if="${#strings.endsWith(boardFile.oriFileName.toLowerCase(), '.mp4')
-                  or #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.avi')
-                  or #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.mkv')
-                  or #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.mpg')}">
+                <th:block th:if="${#strings.length(boardFile.oriFileName) > 0 and
+                                 (#strings.endsWith(boardFile.oriFileName.toLowerCase(), '.mp4') or
+                                  #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.avi') or
+                                  #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.mkv') or
+                                  #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.mpg'))}">
                     <img th:src="@{/images/video.png}" alt="video"
                          style="width: 20px; height: 20px; margin-right: 10px;">
                     <span th:text="${boardFile.oriFileName}"></span>
                 </th:block>
-                <th:block th:if="${!(#strings.endsWith(boardFile.oriFileName.toLowerCase(), '.jpeg')
-                        or #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.jpg')
-                        or #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.png')
-                        or #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.gif')
-                        or #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.mp4')
-                        or #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.avi')
-                        or #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.mkv')
-                        or #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.mpg'))}">
+                <th:block th:if="${#strings.length(boardFile.oriFileName) > 0 and
+                                 !(#strings.endsWith(boardFile.oriFileName.toLowerCase(), '.jpeg') or
+                                   #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.jpg') or
+                                   #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.png') or
+                                   #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.gif') or
+                                   #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.mp4') or
+                                   #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.avi') or
+                                   #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.mkv') or
+                                   #strings.endsWith(boardFile.oriFileName.toLowerCase(), '.mpg'))}">
                     <img th:src="@{/images/document.png}" alt="document"
                          style="width: 20px; height: 20px; margin-right: 10px;">
                     <span th:text="${boardFile.oriFileName}"></span>
