@@ -33,8 +33,16 @@ public class WebOAuthSecurityConfig {
                         .requestMatchers("/login","/signup", "/css/**","/user",
                                 "/js/**","/img/**","/","/check")
                         .permitAll() // 해당 html 페이지들은 로그인 하지 않아도 접속 가능
-                        .requestMatchers("/articleList","/api/**","/testAllowed","/modifyMember")
+
+
+                        .requestMatchers("/api/**","/testAllowed",
+                                "/modifyMember","/deleteMember","/restoredMember")
                         .authenticated()  //권한 필요
+
+
+                        .requestMatchers("/userManagement")
+                        .hasRole("ADMIN")  // 관리자 권한 필요
+
 
                         // 나머지 API URL은 인증 필요
                         .anyRequest().authenticated()

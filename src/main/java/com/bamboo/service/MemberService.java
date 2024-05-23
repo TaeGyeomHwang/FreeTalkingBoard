@@ -5,8 +5,8 @@ import com.bamboo.dto.MemberFormDto;
 import com.bamboo.entity.Member;
 import com.bamboo.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,10 +42,21 @@ public class MemberService {
     }
 
     public Member updatedDelete(String email){
+
+        System.out.println("정지할 이메일이 어떻게 날아오노?" + email);
+
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(()-> new IllegalArgumentException("정지할 이메일을 찾을 수 없습니다."));
 
         memberRepository.deletedEmail(email);
+        return member;
+    }
+
+    public Member updatedRestore(String email){
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(()-> new IllegalArgumentException("정지할 이메일을 찾을 수 없습니다."));
+
+        memberRepository.restoredEmail(email);
         return member;
     }
 
@@ -63,5 +74,18 @@ public class MemberService {
 
         return member;
     }
+
+
+    @Transactional(readOnly = true)
+    public Page<Member> getMemberPage(String searchBy, String searchQuery, Pageable pageable) {
+        if ("email".equals(searchBy)) {
+            return memberRepository.findByEmailContaining(searchQuery, pageable);
+        } else if ("name".equals(searchBy)) {
+            return memberRepository.findByNameContaining(searchQuery, pageable);
+        } else {
+            return memberRepository.findAll(pageable);
+        }
+    }
+
 
 }
