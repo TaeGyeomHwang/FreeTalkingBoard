@@ -118,7 +118,7 @@ public class ReplyService {
 
     //  댓글 목록 가져오기
     public List<ReplyDto> getReplyList(Long boardId){
-        List<Reply> replies = replyRepository.findActiveAndReferencedReplies();
+        List<Reply> replies = replyRepository.findActiveAndReferencedReplies(boardId);
 
         // 디버깅 로그: 조회된 댓글 개수 출력
 //        System.out.println("Number of replies retrieved: " + replies.size());
