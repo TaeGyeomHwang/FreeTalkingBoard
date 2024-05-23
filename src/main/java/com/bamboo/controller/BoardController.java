@@ -83,12 +83,14 @@ public class BoardController {
             return "board/boardForm";
         }
         try {
+            //  카카오 로그인일 경우
             if(MyOAuth2MemberService.loginType == null){
                 SecurityContext securityContext = SecurityContextHolder.getContext();
                 Authentication authentication = securityContext.getAuthentication();
                 String email = authentication.getName();
                 boardService.saveBoard(email, boardDto, boardFileList);
             }else{
+                //  일반 로그인일 경우
                 String email = MyOAuth2MemberService.userEmail;
                 boardService.saveBoard(email, boardDto, boardFileList);
             }
