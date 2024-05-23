@@ -37,8 +37,8 @@ public class BoardController {
 
     //  게시글 상세 조회
     @GetMapping(value = "/boards/{boardId}")
-    public String boardDtl(@PathVariable("boardId") Long boardId, Model model){
-        try{
+    public String boardDtl(@PathVariable("boardId") Long boardId, Model model) {
+        try {
             boardService.setHit(boardId);
             BoardDto boardDto = boardService.getBoardDtl(boardId);
             model.addAttribute("boardDto", boardDto);
@@ -50,10 +50,10 @@ public class BoardController {
             List<ReReplyDto> reReplyDtos = reReplyService.getReReplyList(boardId);
             model.addAttribute("replys", replyDtos);
             model.addAttribute("rereplys", reReplyDtos);
-            model.addAttribute("boardId",boardId);
+            model.addAttribute("boardId", boardId);
             model.addAttribute("replyFormDto", new ReplyFormDto());
             model.addAttribute("loginType", MyOAuth2MemberService.loginType);
-        }catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             model.addAttribute("errorMessage", "존재하지 않는 게시글 입니다.");
             model.addAttribute("boardDto", new BoardDto());
             model.addAttribute("hashtags", new ArrayList<>());
@@ -69,7 +69,7 @@ public class BoardController {
 
     //  게시글 작성 페이지
     @GetMapping(value = "/boards/create")
-    public String newBoard(Model model){
+    public String newBoard(Model model) {
         model.addAttribute("boardDto", new BoardDto());
         model.addAttribute("loginType", MyOAuth2MemberService.loginType);
         return "board/boardForm";
@@ -78,22 +78,62 @@ public class BoardController {
     //  게시글 등록 post 요청
     @PostMapping(value = "/boards/create")
     public String boardNew(BoardDto boardDto, BindingResult bindingResult,
-                           Model model, @RequestParam("boardFiles") List<MultipartFile> boardFileList){
-        if(bindingResult.hasErrors()){
+                           Model model, @RequestParam("boardFiles") List<MultipartFile> boardFileList) {
+        if (bindingResult.hasErrors()) {
             return "board/boardForm";
         }
         try {
-            if(MyOAuth2MemberService.loginType == null){
+            //  카카오 로그인일 경우
+            if (MyOAuth2MemberService.loginType == null) {
                 SecurityContext securityContext = SecurityContextHolder.getContext();
                 Authentication authentication = securityContext.getAuthentication();
                 String email = authentication.getName();
                 boardService.saveBoard(email, boardDto, boardFileList);
-            }else{
+            } else {
+                //  일반 로그인일 경우
                 String email = MyOAuth2MemberService.userEmail;
                 boardService.saveBoard(email, boardDto, boardFileList);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             model.addAttribute("errorMessage", "게시글 등록 중 에러가 발생하였습니다.");
+            return "board/boardForm";
+        }
+
+        return "redirect:/";
+    }
+
+    //  게시글 수정 페이지 접속
+    @PostMapping(value = "/boards/update")
+    public String boardUpdate(@RequestParam("boardId") Long boardId, Model model) {
+        try {
+            BoardDto boardDto = boardService.getBoardDtl(boardId);
+            model.addAttribute("boardDto", boardDto);
+            List<String> hashtags = boardService.getHashtags(boardId);
+            model.addAttribute("hashtags", hashtags);
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("errorMessage", "존재하지 않는 글 입니다.");
+            model.addAttribute("itemFormDto", new BoardDto());
+            return "board/boardForm";
+        }
+        return "board/boardForm";
+    }
+
+    //  게시글 수정 post 요청
+    @PostMapping(value = "/boards/update/{boardId}")
+    public String boardUpdateSubmit(@RequestParam("boardId") Long boardId, BoardDto boardDto, BindingResult bindingResult,
+                                    Model model, @RequestParam("boardFiles") List<MultipartFile> boardFileList) {
+        if (bindingResult.hasErrors()) {
+            return "board/boardForm";
+        }
+        try {
+            System.out.println("게시글 수정 컨트롤러 시작");
+            boardService.updateBoard(boardId, boardDto, boardFileList);
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "게시글 등록 중 에러가 발생하였습니다.");
+            BoardDto boardDto1 = boardService.getBoardDtl(boardId);
+            model.addAttribute("boardDto", boardDto1);
+            List<String> hashtags = boardService.getHashtags(boardId);
+            model.addAttribute("hashtags", hashtags);
             return "board/boardForm";
         }
 
@@ -102,7 +142,7 @@ public class BoardController {
 
     //  게시글 삭제 post 요청
     @PostMapping(value = "/boards/delete")
-    public String boardDelete(@RequestParam("boardId") Long boardId, RedirectAttributes redirectAttributes){
+    public String boardDelete(@RequestParam("boardId") Long boardId, RedirectAttributes redirectAttributes) {
         try {
             System.out.println("게시글 삭제 시작");
             boardService.cancelBoard(boardId);
@@ -111,7 +151,7 @@ public class BoardController {
             return "redirect:/";
         } catch (Exception e) {
             // 삭제 실패 시
-            System.out.println("삭제 에러 메시지:"+e.getMessage());
+            System.out.println("삭제 에러 메시지:" + e.getMessage());
             redirectAttributes.addFlashAttribute("errorMessage", "게시글 삭제 중 오류가 발생했습니다. 다시 시도해주세요.");
             return "redirect:/boards/" + boardId;
         }
@@ -121,14 +161,23 @@ public class BoardController {
     @GetMapping(value = "/boards/good/{boardId}")
     public String boardGood(@PathVariable("boardId") Long boardId, RedirectAttributes redirectAttributes, Model model) {
         try {
-            SecurityContext securityContext = SecurityContextHolder.getContext();
-            Authentication authentication = securityContext.getAuthentication();
-            String email = authentication.getName();
-            System.out.println("좋아요 요청: " + boardId);
-            Boolean isTrue = boardService.setGood(boardId, email);
-            if (!isTrue){
-                System.out.println("좋아요는 한 게시글당 한 번만 누를 수 있습니다.");
-                redirectAttributes.addFlashAttribute("errorMessage", "좋아요는 한 게시글당 한 번만 누를 수 있습니다.");
+            System.out.println("좋아요 시작");
+            if (MyOAuth2MemberService.loginType == null) {
+                SecurityContext securityContext = SecurityContextHolder.getContext();
+                Authentication authentication = securityContext.getAuthentication();
+                String email = authentication.getName();
+                Boolean isTrue = boardService.setGood(boardId, email);
+                if (!isTrue) {
+                    System.out.println("좋아요는 한 게시글당 한 번만 누를 수 있습니다.");
+                    redirectAttributes.addFlashAttribute("errorMessage", "좋아요는 한 게시글당 한 번만 누를 수 있습니다.");
+                }
+            } else {
+                String email = MyOAuth2MemberService.userEmail;
+                Boolean isTrue = boardService.setGood(boardId, email);
+                if (!isTrue) {
+                    System.out.println("좋아요는 한 게시글당 한 번만 누를 수 있습니다.");
+                    redirectAttributes.addFlashAttribute("errorMessage", "좋아요는 한 게시글당 한 번만 누를 수 있습니다.");
+                }
             }
         } catch (EntityNotFoundException e) {
             model.addAttribute("errorMessage", "좋아요 에러 발생: 게시글을 찾을 수 없습니다.");
@@ -144,23 +193,26 @@ public class BoardController {
 
     //  댓글 등록 post 요청
     @PostMapping(value = "/boards/comments/new")
-    public String replyNew(@Valid ReplyFormDto replyFormDto, @RequestParam("boardId") Long boardId, BindingResult bindingResult, Model model){
-        if(bindingResult.hasErrors()){
-            return "reply/test";
+    public String replyNew(@Valid ReplyFormDto replyFormDto, @RequestParam("boardId") Long boardId, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            System.out.println("댓글 등록 bindingResult.hasErrors() 오류 발생");
+            return "redirect:/boards/" + boardId;
         }
-
-        try{
-            SecurityContext securityContext = SecurityContextHolder.getContext();
-            Authentication authentication = securityContext.getAuthentication();
-            String email = authentication.getName();
-
+        try {
             System.out.println("댓글 등록 시작");
-//            로그인 정보 가져와서 댓글 등록
-            replyService.saveReply(email, boardId, replyFormDto);
-        }catch (Exception e) {
-            System.out.println("에러 메시지:"+e.getMessage());
+            if (MyOAuth2MemberService.loginType == null) {
+                SecurityContext securityContext = SecurityContextHolder.getContext();
+                Authentication authentication = securityContext.getAuthentication();
+                String email = authentication.getName();
+                replyService.saveReply(email, boardId, replyFormDto);
+            } else {
+                String email = MyOAuth2MemberService.userEmail;
+                replyService.saveReply(email, boardId, replyFormDto);
+            }
+        } catch (Exception e) {
+            System.out.println("에러 메시지:" + e.getMessage());
             model.addAttribute("errorMessage", "댓글 등록 중 에러가 발생하였습니다.");
-            return "reply/test";
+            return "redirect:/boards/" + boardId;
         }
 
         return "redirect:/boards/" + boardId;
@@ -168,7 +220,7 @@ public class BoardController {
 
     // 댓글 삭제 post 요청
     @PostMapping(value = "/boards/comments/delete")
-    public String replyDelete(@RequestParam("replyId") Long replyId, @RequestParam("boardId") Long boardId, RedirectAttributes redirectAttributes){
+    public String replyDelete(@RequestParam("replyId") Long replyId, @RequestParam("boardId") Long boardId, RedirectAttributes redirectAttributes) {
         try {
             System.out.println("댓글 삭제 시작");
             replyService.cancelReply(replyId);
@@ -177,31 +229,34 @@ public class BoardController {
             return "redirect:/boards/" + boardId;
         } catch (Exception e) {
             // 삭제 실패 시
-            System.out.println("삭제 에러 메시지:"+e.getMessage());
+            System.out.println("삭제 에러 메시지:" + e.getMessage());
             redirectAttributes.addFlashAttribute("errorMessage", "댓글 삭제 중 오류가 발생했습니다. 다시 시도해주세요.");
-            return "reply/test"+ boardId;
+            return "redirect:/boards/" + boardId;
         }
     }
 
     //  대댓글 등록 post 요청
     @PostMapping(value = "/boards/comments/new/rereply")
-    public String reReplyNew(@Valid ReplyFormDto replyFormDto, @RequestParam("boardId") Long boardId, BindingResult bindingResult, Model model){
-        if(bindingResult.hasErrors()){
-            return "reply/test";
+    public String reReplyNew(@Valid ReplyFormDto replyFormDto, @RequestParam("boardId") Long boardId, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            System.out.println("대댓글 등록 bindingResult.hasErrors() 오류 발생");
+            return "redirect:/boards/" + boardId;
         }
-
-        try{
-            SecurityContext securityContext = SecurityContextHolder.getContext();
-            Authentication authentication = securityContext.getAuthentication();
-            String email = authentication.getName();
-
+        try {
             System.out.println("대댓글 등록 시작");
-//            로그인 정보 가져와서 대댓글 등록
-            reReplyService.saveReReply(email, boardId, replyFormDto);
-        }catch (Exception e) {
-            System.out.println("댓글 삭제 에러 메시지:"+e.getMessage());
+            if (MyOAuth2MemberService.loginType == null) {
+                SecurityContext securityContext = SecurityContextHolder.getContext();
+                Authentication authentication = securityContext.getAuthentication();
+                String email = authentication.getName();
+                reReplyService.saveReReply(email, boardId, replyFormDto);
+            } else {
+                String email = MyOAuth2MemberService.userEmail;
+                reReplyService.saveReReply(email, boardId, replyFormDto);
+            }
+        } catch (Exception e) {
+            System.out.println("댓글 삭제 에러 메시지:" + e.getMessage());
             model.addAttribute("errorMessage", "대댓글 등록 중 에러가 발생하였습니다.");
-            return "reply/test";
+            return "redirect:/boards/" + boardId;
         }
 
         return "redirect:/boards/" + boardId;
@@ -209,18 +264,18 @@ public class BoardController {
 
     //  대댓글 삭제 post 요청
     @PostMapping(value = "/boards/comments/delete/rereply")
-    public String reReplyDelete(@RequestParam("rereplyId") Long reReplyId, @RequestParam("boardId") Long boardId, RedirectAttributes redirectAttributes){
+    public String reReplyDelete(@RequestParam("rereplyId") Long reReplyId, @RequestParam("boardId") Long boardId, RedirectAttributes redirectAttributes) {
         try {
-            System.out.println("댓글 삭제 시작");
+            System.out.println("대댓글 삭제 시작");
             reReplyService.cancelReReply(reReplyId);
             // 삭제 성공 시
             redirectAttributes.addFlashAttribute("successMessage", "댓글이 성공적으로 삭제되었습니다.");
             return "redirect:/boards/" + boardId;
         } catch (Exception e) {
             // 삭제 실패 시
-            System.out.println("대댓글 삭제 에러 메시지:"+e.getMessage());
+            System.out.println("대댓글 삭제 에러 메시지:" + e.getMessage());
             redirectAttributes.addFlashAttribute("errorMessage", "대댓글 삭제 중 오류가 발생했습니다. 다시 시도해주세요.");
-            return "reply/test";
+            return "redirect:/boards/" + boardId;
         }
     }
 

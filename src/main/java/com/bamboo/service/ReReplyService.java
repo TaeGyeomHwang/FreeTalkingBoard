@@ -62,7 +62,7 @@ public class ReReplyService {
 
     //  대댓글 목록 가져오기
     public List<ReReplyDto> getReReplyList(Long boardId){
-        List<ReReply> reReplies = reReplyRepository.findAllNotDeleted();
+        List<ReReply> reReplies = reReplyRepository.findAllNotDeleted(boardId);
 
         // 디버깅 로그: 조회된 댓글 개수 출력
 //        System.out.println("Number of reReplies retrieved: " + reReplies.size());
