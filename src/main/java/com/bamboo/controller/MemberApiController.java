@@ -63,26 +63,6 @@ public class MemberApiController {
         return "redirect:/login"; // 회원 가입이 완료된 이후에 로그인 페이지로 이동
     }
 
-//    @PostMapping("/check")
-//    public String checkEmail(@RequestBody MemberFormDto request, RedirectAttributes redirectAttributes) {
-//
-//        boolean checkEmail = memberService.findByEmail(request.getEmail());
-//
-//        if (!checkEmail) {
-//            System.out.println("아이디 사용 가능");
-//            redirectAttributes.addFlashAttribute("checkEmail", "사용 가능한 이메일입니다.");
-//            redirectAttributes.addFlashAttribute("check", true);
-//        } else {
-//            System.out.println("아이디 사용 불가능");
-//            redirectAttributes.addFlashAttribute("checkEmail", "사용 불가능한 이메일입니다.");
-//            redirectAttributes.addFlashAttribute("check", false);
-//        }
-//
-//        redirectAttributes.addFlashAttribute("MemberFormDto", request);
-//
-//        return "/member/signup";
-//    }
-
     @PostMapping("/check")
     public ResponseEntity<Map<String, Object>> checkEmail(@RequestBody MemberFormDto request) {
         boolean checkEmail = memberService.findByEmail(request.getEmail());
@@ -106,10 +86,7 @@ public class MemberApiController {
 
     @PutMapping("/deleteMember")
     public ResponseEntity<Member> deleteMember(@RequestBody MemberDeleteDto request){
-//        System.out.println(request.getEmail()+": 정지할 이메일 이름");
-//        System.out.println(request.isDeleted()+": 정지 여부?");
         Member updatedMember = memberService.updatedDelete(request.getEmail());
-
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(updatedMember);
 
@@ -119,7 +96,6 @@ public class MemberApiController {
     RedirectAttributes redirectAttributes) {
 
         System.out.println(request.getEmail()+"이게 이메일이야 쟁재뱡ㅈㅂ얒버애ㅑㅂㅈ애ㅑㅈ배ㅓㅈ뱌ㅐ어ㅑ잽어ㅑㅐㅈ버ㅐㅑㅈ버ㅐㅑ저ㅑㅐ저ㅑㅐ");
-
         // 유효성 검사
         if (request.getName().length() < 3 || request.getName().length() > 8) {
             bindingResult.rejectValue("name", "nameLengthIncorrect", "이름은 3자 이상 8자 이하이어야 합니다.");
@@ -130,12 +106,10 @@ public class MemberApiController {
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             bindingResult.rejectValue("confirmPassword", "passwordMismatch", "2개의 패스워드가 일치하지 않습니다.");
         }
-
         // 오류가 있으면 폼으로 되돌아감
         if (bindingResult.hasErrors()) {
             return "member/modifyMember"; // 폼 페이지로 돌아가서 오류 메시지 표시
         }
-
         memberService.modifyMember(request.getName(), request.getPassword(), request.getEmail());
 
         redirectAttributes.addFlashAttribute("success", true);
