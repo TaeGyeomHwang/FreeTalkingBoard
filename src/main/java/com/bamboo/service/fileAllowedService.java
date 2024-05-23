@@ -68,4 +68,10 @@ public class fileAllowedService {
         fileExtensionsRepository.updateConfigId();
         return fileConfig;
     }
+
+    public void defaultFileAllowed(){
+        fileAllowedRepository.defualtFileAllowed();
+        fileExtensionsRepository.defualtExtensions();
+    }
+
 }

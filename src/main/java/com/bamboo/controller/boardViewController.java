@@ -33,14 +33,6 @@ public class boardViewController {
         FileConfig fileConfig = fileAllowedService.findById(1L);
         String extensions = fileAllowedService.getExtensionsByFileConfigId(1L);
 
-
-        if(fileConfig == null){
-            fileConfig.setId(1L);
-            fileConfig.setMaxFileSize(20L);  // 프로퍼티스에서 가져온 값
-            fileConfig.setMaxFileCount(10L); //파일 최대 갯수의 디폴트는 10개
-            extensions = "jpg";
-
-        }
         model.addAttribute("extensions", extensions);
         model.addAttribute("allowed",fileConfig);
         model.addAttribute("loginType",MyOAuth2MemberService.loginType);
@@ -48,17 +40,4 @@ public class boardViewController {
         return "fileAllowed";
     }
 
-//    @GetMapping("/")
-//    public String getPage(Model model){
-//
-//        model.addAttribute("loginType",MyOAuth2MemberService.loginType);
-//        return "mainPage";
-//    }
-
-//    @GetMapping("/1")
-//    public String getPage2(Model model){
-//
-//        model.addAttribute("loginType",MyOAuth2MemberService.loginType);
-//        return "testHtml";
-//    }
 }
