@@ -83,10 +83,15 @@ public class BoardController {
             return "board/boardForm";
         }
         try {
-            SecurityContext securityContext = SecurityContextHolder.getContext();
-            Authentication authentication = securityContext.getAuthentication();
-            String email = authentication.getName();
-            boardService.saveBoard(email, boardDto, boardFileList);
+            if(MyOAuth2MemberService.loginType == null){
+                SecurityContext securityContext = SecurityContextHolder.getContext();
+                Authentication authentication = securityContext.getAuthentication();
+                String email = authentication.getName();
+                boardService.saveBoard(email, boardDto, boardFileList);
+            }else{
+                String email = MyOAuth2MemberService.userEmail;
+                boardService.saveBoard(email, boardDto, boardFileList);
+            }
         } catch (Exception e){
             model.addAttribute("errorMessage", "게시글 등록 중 에러가 발생하였습니다.");
             return "board/boardForm";

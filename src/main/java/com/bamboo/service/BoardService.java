@@ -44,6 +44,7 @@ public class BoardService {
         Member member = memberRepository.findById(email)
                 .orElseThrow(EntityNotFoundException::new);
         board.setMember(member);
+        System.out.println("게시글의 이메일: "+board.getMember().getEmail());
         boardRepository.save(board);
 
         for(int i=0;i<boardFileList.size();i++){
