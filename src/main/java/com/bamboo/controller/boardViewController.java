@@ -7,7 +7,6 @@ import com.bamboo.service.MultipartConfigService;
 import com.bamboo.service.fileAllowedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +36,7 @@ public class boardViewController {
         model.addAttribute("allowed",fileConfig);
         model.addAttribute("loginType",MyOAuth2MemberService.loginType);
 
-        return "fileAllowed";
+        return "admin/fileAllowed";
     }
 
 }
