@@ -61,7 +61,9 @@ public class MyOAuth2MemberService extends DefaultOAuth2UserService {
             System.out.println("이용 가능한 사용자입니다...3473275983257982357932758325789237598235798237러ㅏ인롸ㅓㄴㅇ로ㅑㅓ로ㅑㄷㅈ롣ㅈ로ㅑ젿로ㅓㅐㅑ젿ㄹ");
             if ("3484473887".equals(userId)) {
                 authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN"));
-            } else {
+            }else if("3493271205".equals(userId)){
+            authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            }else {
                 authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
             }
         }
