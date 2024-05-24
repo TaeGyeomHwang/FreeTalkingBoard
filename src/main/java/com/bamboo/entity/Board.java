@@ -37,6 +37,9 @@ public class Board extends BaseEntity{
     @Column(columnDefinition = "integer default 0", nullable = false)
     private Long hit = 0L; // 조회수, 기본값 0
 
+    @Column(name = "board_is_restored")
+    private boolean isRestored;
+
     public void updateBoard(BoardFormDto boardFormDto) {
         this.title = boardFormDto.getTitle();
         this.content = boardFormDto.getContent();
