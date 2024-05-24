@@ -1,6 +1,8 @@
 package com.bamboo.service;
 
-import com.bamboo.dto.*;
+import com.bamboo.dto.BoardDto;
+import com.bamboo.dto.BoardFileDto;
+import com.bamboo.dto.BoardSearchDto;
 import com.bamboo.entity.*;
 import com.bamboo.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,13 +22,12 @@ import java.util.List;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final BoardFileService boardFileService;
-    private final BoardFileRepository boardFileRepository;
-    private final HashTagService hashTagService;
-    private final BoardHashtagMapRepository boardHashtagMapRepository;
-    private final HashTagRepository hashtagRepository;
     private final MemberRepository memberRepository;
+    private final BoardFileRepository boardFileRepository;
     private final BoardMemberMapRepository boardMemberMapRepository;
+    private final BoardHashtagMapRepository boardHashtagMapRepository;
+
+    private final BoardFileService boardFileService;
 
     @Transactional(readOnly = true)
     public Page<Board> getBoardPage(BoardSearchDto boardSearchDto, Pageable pageable) {
@@ -43,43 +44,36 @@ public class BoardService {
         return boardRepository.getDeletedBoardPage(boardSearchDto, pageable);
     }
 
-    public Long saveBoard(BoardFormDto boardFormDto, List<MultipartFile> boardFiles) throws Exception {
-        Board board = boardFormDto.createBoard();
-        board.setDeleted(false);
+    public Long saveBoard(String email, BoardDto boardDto, List<MultipartFile> boardFileList) throws Exception {
+        Board board = boardDto.createBoard();
+        Member member = memberRepository.findById(email)
+                .orElseThrow(EntityNotFoundException::new);
+        board.setMember(member);
         boardRepository.save(board);
 
-        // 파일 저장
-        if (boardFiles != null && !boardFiles.isEmpty()) {
-            for (MultipartFile multipartFile : boardFiles) {
-                if (!multipartFile.isEmpty()) {
-                    BoardFile boardFile = new BoardFile();
-                    boardFile.setBoard(board);
-                    boardFileService.saveBoardFile(boardFile, multipartFile); // BoardFileService를 사용하여 파일 저장
-                }
-            }
+        for(int i=0;i<boardFileList.size();i++){
+            BoardFile boardFile = new BoardFile();
+            boardFile.setBoard(board);
+
+            boardFileService.saveBoardFile(boardFile, boardFileList.get(i));
         }
 
-        // 해시태그 저장 및 매핑
-        if (boardFormDto.getHashtag() != null && !boardFormDto.getHashtag().isEmpty()) {
-            String[] hashtags = boardFormDto.getHashtag().split(" ");
-            for (String tagName : hashtags) {
-                String trimmedTagName = tagName.trim();
-                if (!trimmedTagName.isEmpty()) {
-                    Hashtag hashtag = hashtagRepository.findByName(trimmedTagName).orElseGet(() -> {
-                        Hashtag newHashtag = new Hashtag();
-                        newHashtag.setName(trimmedTagName);
-                        return newHashtag;
-                    });
-                    hashtagRepository.save(hashtag);
+        return board.getId();
+    }
 
-                    BoardHashtagMap boardHashtagMap = new BoardHashtagMap();
-                    boardHashtagMap.setBoard(board);
-                    boardHashtagMap.setHashtag(hashtag);
-                    boardHashtagMapRepository.save(boardHashtagMap);
-                }
-            }
+
+    public Long updateBoard(Long boardId, BoardDto boardDto, List<MultipartFile> boardFileList) throws Exception {
+        System.out.println("서비스 게시글 수정 시작");
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(EntityNotFoundException::new);
+        board.setTitle(boardDto.getTitle());
+        board.setContent(boardDto.getContent());
+        for(int i=0;i<boardFileList.size();i++){
+            BoardFile boardFile = new BoardFile();
+            boardFile.setBoard(board);
+
+            boardFileService.saveBoardFile(boardFile, boardFileList.get(i));
         }
-
         return board.getId();
     }
 
@@ -98,66 +92,10 @@ public class BoardService {
         boardDto.setBoardFileDtoList(boardFileDtoList);
 
         Member member = board.getMember();
-        boardDto.setMember1(member);
+        boardDto.setMember(member);
 
         return boardDto;
     }
-
-    public Long updateBoard(BoardFormDto boardFormDto, List<MultipartFile> boardFileList) throws Exception {
-
-        Board board = boardRepository.findById(boardFormDto.getId())
-                .orElseThrow(EntityNotFoundException::new);
-        board.updateBoard(boardFormDto);
-        List<Long> boardFileIds = boardFormDto.getBoardFileIds();
-
-        // 파일 ID 리스트와 파일 리스트 크기 일치 확인
-        if (boardFileIds != null && boardFileIds.size() == boardFileList.size()) {
-            for (int i = 0; i < boardFileList.size(); i++) {
-                boardFileService.updateBoardFile(boardFileIds.get(i), boardFileList.get(i));
-            }
-        } else {
-            // 기존 파일 삭제
-            boardFileRepository.deleteByBoard(board);
-
-            // 새 파일 추가
-            if (boardFileList != null && !boardFileList.isEmpty()) {
-                for (MultipartFile multipartFile : boardFileList) {
-                    if (!multipartFile.isEmpty()) {
-                        BoardFile boardFile = new BoardFile();
-                        boardFile.setBoard(board);
-                        boardFileService.saveBoardFile(boardFile, multipartFile);
-                    }
-                }
-            }
-        }
-
-        // 기존 해시태그 매핑 삭제
-        boardHashtagMapRepository.deleteByBoard(board);
-
-        // 새로운 해시태그 저장 및 매핑
-        if (boardFormDto.getHashtag() != null && !boardFormDto.getHashtag().isEmpty()) {
-            String[] hashtags = boardFormDto.getHashtag().split(" ");
-            for (String tagName : hashtags) {
-                String trimmedTagName = tagName.trim();
-                if (!trimmedTagName.isEmpty()) {
-                    Hashtag hashtag = hashtagRepository.findByName(trimmedTagName).orElseGet(() -> {
-                        Hashtag newHashtag = new Hashtag();
-                        newHashtag.setName(trimmedTagName);
-                        return newHashtag;
-                    });
-                    hashtagRepository.save(hashtag);
-
-                    BoardHashtagMap boardHashtagMap = new BoardHashtagMap();
-                    boardHashtagMap.setBoard(board);
-                    boardHashtagMap.setHashtag(hashtag);
-                    boardHashtagMapRepository.save(boardHashtagMap);
-                }
-            }
-        }
-
-        return board.getId();
-    }
-
 
     public List<String> getHashtags(Long boardId){
         List<Hashtag> hashtagList = boardHashtagMapRepository.findHashtagsByBoardId(boardId);

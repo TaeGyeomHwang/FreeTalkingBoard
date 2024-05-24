@@ -15,7 +15,7 @@ public class BoardFileDto {
 
     private String oriFileName;
 
-    private String fileUrl; //파일 경로
+    private String fileUrl;
 
     private static ModelMapper modelMapper = new ModelMapper();
 

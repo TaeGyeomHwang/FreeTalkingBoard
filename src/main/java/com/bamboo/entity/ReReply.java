@@ -4,12 +4,17 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "re_reply")
 @Getter
 @Setter
 @ToString
+@EntityListeners(value = {AuditingEntityListener.class})
 public class ReReply {
 
     @Id
@@ -21,7 +26,7 @@ public class ReReply {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_email")
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,4 +39,8 @@ public class ReReply {
 
     @Column(name = "re_reply_is_deleted")
     private boolean isDeleted;
+
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime regTime;
 }

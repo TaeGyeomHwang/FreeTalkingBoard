@@ -46,7 +46,7 @@
                 <p th:text="${boardDto.title}"/>
             </div>
             <div class="h4 text-left">
-                <small th:text="${boardDto.member1.name}"></small><small> | </small>
+                <small th:text="${boardDto.member.name}"></small><small> | </small>
                 <small th:text="${#temporals.format(boardDto.regTime, 'yy.MM.dd HH:mm:ss')}"></small><small> |
                 조회수 </small>
                 <small th:text="${boardDto.hit}"></small>
@@ -55,7 +55,7 @@
         <div sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
             <button type="button" class="btn btn-outline-secondary"
                     id="danger-member">계정 정지</button>
-            <input type="hidden" id="dangerEmail" th:value="${boardDto.member1.email}">
+            <input type="hidden" id="dangerEmail" th:value="${boardDto.member.email}">
         </div>
     </div>
     <hr class="my-4">
@@ -128,7 +128,7 @@
 
         <th:block th:if="${loginType==null}">
             <th:block
-                    th:if="${#authentication.getName() eq boardDto.member1.email}">
+                    th:if="${#authentication.getName() eq boardDto.member.email}">
                 <div class="d-inline-block">
                     <form action="/boards/update" method="post" style="display:inline;">
                         <input type="hidden" name="boardId" th:value="${boardId}">
@@ -140,7 +140,7 @@
         </th:block>
         <th:block th:if="${loginType!=null}">
             <th:block
-                    th:if="${ #authentication.principal.attributes['kakao_account']['email'] eq boardDto.member1.email}">
+                    th:if="${ #authentication.principal.attributes['kakao_account']['email'] eq boardDto.member.email}">
                 <div class="d-inline-block">
                     <form action="/boards/update" method="post" style="display:inline;">
                         <input type="hidden" name="boardId" th:value="${boardId}">
@@ -153,7 +153,7 @@
 
         <th:block th:if="${loginType==null}">
             <th:block
-                    th:if="${#authentication.getName() eq boardDto.member1.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
+                    th:if="${#authentication.getName() eq boardDto.member.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
                 <div class="d-inline-block">
                     <form action="/boards/delete" method="post" style="display:inline;">
                         <input type="hidden" name="boardId" th:value="${boardId}">
@@ -164,7 +164,7 @@
         </th:block>
         <th:block th:if="${loginType!=null}">
             <th:block
-                    th:if="${#authentication.principal.attributes['kakao_account']['email'] eq boardDto.member1.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
+                    th:if="${#authentication.principal.attributes['kakao_account']['email'] eq boardDto.member.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
                 <div class="d-inline-block">
                     <form action="/boards/delete" method="post" style="display:inline;">
                         <input type="hidden" name="boardId" th:value="${boardId}">
@@ -213,7 +213,7 @@
             <!-- 삭제 버튼 -->
             <th:block th:if="${loginType==null}">
                 <th:block
-                        th:if="${#authentication.getName() eq boardDto.member1.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
+                        th:if="${#authentication.getName() eq boardDto.member.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
                     <form action="/boards/comments/delete" method="post">
                         <input type="hidden" name="replyId" th:value="${reply.id}">
                         <input type="hidden" name="boardId" th:value="${boardId}">
@@ -224,7 +224,7 @@
             </th:block>
             <th:block th:if="${loginType!=null}">
                 <th:block
-                        th:if="${#authentication.principal.attributes['kakao_account']['email'] eq boardDto.member1.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
+                        th:if="${#authentication.principal.attributes['kakao_account']['email'] eq boardDto.member.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
                     <form action="/boards/comments/delete" method="post">
                         <input type="hidden" name="replyId" th:value="${reply.id}">
                         <input type="hidden" name="boardId" th:value="${boardId}">
@@ -255,7 +255,7 @@
                         <!-- 대댓글 삭제 버튼 -->
                         <th:block th:if="${loginType==null}">
                             <th:block
-                                    th:if="${#authentication.getName() eq boardDto.member1.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
+                                    th:if="${#authentication.getName() eq boardDto.member.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
                                 <form action="/boards/comments/delete/rereply" method="post">
                                     <input type="hidden" name="rereplyId" th:value="${rereply.id}">
                                     <input type="hidden" name="boardId" th:value="${boardId}">
@@ -266,7 +266,7 @@
                         </th:block>
                         <th:block th:if="${loginType!=null}">
                             <th:block
-                                    th:if="${#authentication.principal.attributes['kakao_account']['email'] eq boardDto.member1.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
+                                    th:if="${#authentication.principal.attributes['kakao_account']['email'] eq boardDto.member.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
                                 <form action="/boards/comments/delete/rereply" method="post">
                                     <input type="hidden" name="rereplyId" th:value="${rereply.id}">
                                     <input type="hidden" name="boardId" th:value="${boardId}">

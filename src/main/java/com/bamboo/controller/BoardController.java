@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,48 +35,6 @@ import java.util.Optional;
 public class BoardController {
 
     private final BoardService boardService;
-
-    @GetMapping(value = "/user/board/new")
-    public String boardForm(Model model) {
-        model.addAttribute("boardFormDto", new BoardFormDto());
-        return "board/boardForm";
-    }
-
-    @PostMapping(value = "/user/board/new")
-    public String boardNew(@Valid BoardFormDto boardFormDto, BindingResult bindingResult, Model model,
-                           @RequestParam("boardFile") List<MultipartFile> boardFiles) {
-        if (bindingResult.hasErrors()) {
-            return "board/boardForm";
-        }
-
-        try {
-            boardService.saveBoard(boardFormDto, boardFiles);
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", "Error during file upload: " + e.getMessage());
-            return "board/boardForm";
-        }
-
-        return "redirect:/";
-    }
-
-    @PostMapping(value = "/user/board/update/{boardId}")
-    public String boardUpdate(@PathVariable("boardId") Long boardId,
-                              @Valid BoardFormDto boardFormDto,
-                              BindingResult bindingResult,
-                              Model model,
-                              @RequestParam("boardFile") List<MultipartFile> boardFileList) {
-        if (bindingResult.hasErrors()) {
-            return "board/boardForm";
-        }
-        try {
-            boardService.updateBoard(boardFormDto, boardFileList);
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", "글 수정 중 에러: " + e.getMessage());
-            return "board/boardForm";
-        }
-        return "redirect:/";
-    }
-
     private final ReplyService replyService;
     private final ReReplyService reReplyService;
 
@@ -109,6 +68,79 @@ public class BoardController {
             return "board/boardDtl";
         }
         return "board/boardDtl";
+    }
+
+    //  게시글 작성 페이지
+    @GetMapping(value = "/boards/create")
+    public String newBoard(Model model) {
+        model.addAttribute("boardDto", new BoardDto());
+        model.addAttribute("loginType", MyOAuth2MemberService.loginType);
+        return "board/boardForm";
+    }
+
+    //  게시글 등록 post 요청
+    @PostMapping(value = "/boards/create")
+    public String boardNew(BoardDto boardDto, BindingResult bindingResult,
+                           Model model, @RequestParam("boardFiles") List<MultipartFile> boardFileList) {
+        if (bindingResult.hasErrors()) {
+            return "board/boardForm";
+        }
+        try {
+            //  카카오 로그인일 경우
+            if (MyOAuth2MemberService.loginType == null) {
+                SecurityContext securityContext = SecurityContextHolder.getContext();
+                Authentication authentication = securityContext.getAuthentication();
+                String email = authentication.getName();
+                boardService.saveBoard(email, boardDto, boardFileList);
+            } else {
+                //  일반 로그인일 경우
+                String email = MyOAuth2MemberService.userEmail;
+                boardService.saveBoard(email, boardDto, boardFileList);
+            }
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "게시글 등록 중 에러가 발생하였습니다.");
+            return "board/boardForm";
+        }
+
+        return "redirect:/";
+    }
+
+    //  게시글 수정 페이지 접속
+    @PostMapping(value = "/boards/update")
+    public String boardUpdate(@RequestParam("boardId") Long boardId, Model model) {
+        try {
+            BoardDto boardDto = boardService.getBoardDtl(boardId);
+            model.addAttribute("boardDto", boardDto);
+            List<String> hashtags = boardService.getHashtags(boardId);
+            model.addAttribute("hashtags", hashtags);
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("errorMessage", "존재하지 않는 글 입니다.");
+            model.addAttribute("itemFormDto", new BoardDto());
+            return "board/boardForm";
+        }
+        return "board/boardForm";
+    }
+
+    //  게시글 수정 post 요청
+    @PostMapping(value = "/boards/update/{boardId}")
+    public String boardUpdateSubmit(@RequestParam("boardId") Long boardId, BoardDto boardDto, BindingResult bindingResult,
+                                    Model model, @RequestParam("boardFiles") List<MultipartFile> boardFileList) {
+        if (bindingResult.hasErrors()) {
+            return "board/boardForm";
+        }
+        try {
+            System.out.println("게시글 수정 컨트롤러 시작");
+            boardService.updateBoard(boardId, boardDto, boardFileList);
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "게시글 등록 중 에러가 발생하였습니다.");
+            BoardDto boardDto1 = boardService.getBoardDtl(boardId);
+            model.addAttribute("boardDto", boardDto1);
+            List<String> hashtags = boardService.getHashtags(boardId);
+            model.addAttribute("hashtags", hashtags);
+            return "board/boardForm";
+        }
+
+        return "redirect:/";
     }
 
     //  게시글 삭제 post 요청
