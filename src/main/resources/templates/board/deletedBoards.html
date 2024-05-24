@@ -54,7 +54,6 @@
 
 <div layout:fragment="content">
 
-    <form th:action="@{'/deleted/' + ${boards.number}}" role="form" method="get" th:object="${boards}">
         <table class="table">
             <thead>
             <tr>
@@ -115,7 +114,7 @@
 
             </ul>
         </div>
-
+    <form th:action="@{'/deleted/' + ${boards.number}}" role="form" method="get" th:object="${boards}">
         <div class="form-inline justify-content-center" th:object="${boardSearchDto}">
             <select th:field="*{searchBy}" class="form-control" style="width:auto;">
                 <option value="title">제목</option>
