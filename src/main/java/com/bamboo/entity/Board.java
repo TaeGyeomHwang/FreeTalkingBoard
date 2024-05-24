@@ -6,14 +6,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "board")
 @Getter
 @Setter
 @ToString
-public class Board {
+public class Board extends BaseEntity{
 
     @Id
     @Column(name = "board_id")
@@ -32,15 +30,12 @@ public class Board {
     private String content; //내용
 
     @Column(name = "board_is_deleted")
-    private boolean isDeleted; //삭제 여부
+    private boolean isDeleted = false; //삭제 여부
 
     private Long good; //좋아요
 
-    private Long hit; //조회수
-
-    private LocalDateTime regTime; //등록시간
-
-    private LocalDateTime updateTime; //수정 시간
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private Long hit = 0L; // 조회수, 기본값 0
 
     public void updateBoard(BoardFormDto boardFormDto) {
         this.title = boardFormDto.getTitle();

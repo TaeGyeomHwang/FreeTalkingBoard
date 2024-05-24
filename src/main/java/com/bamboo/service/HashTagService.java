@@ -1,6 +1,5 @@
 package com.bamboo.service;
 
-import com.bamboo.dto.HashtagDto;
 import com.bamboo.entity.Hashtag;
 import com.bamboo.repository.HashTagRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,9 +13,11 @@ public class HashTagService {
 
     private final HashTagRepository hashTagRepository;
 
-    public Hashtag saveHashtag(HashtagDto hashtagDto) {
-        Hashtag hashtag = new Hashtag();
-        hashtag.setName(hashtagDto.getTagName());
-        return hashTagRepository.save(hashtag);
+    public Hashtag findOrCreateTag(String tagName) {
+        return hashTagRepository.findByName(tagName).orElseGet(() -> {
+            Hashtag newTag = new Hashtag();
+            newTag.setName(tagName);
+            return hashTagRepository.save(newTag);
+        });
     }
 }

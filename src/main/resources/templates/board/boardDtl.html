@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<!-- 사용자 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+        .mgb-15 {
+            margin-bottom: 15px;
+        }
+        .mgt-30 {
+            margin-top: 30px;
+        }
+        .wd50 {
+            height: auto;
+            width: 50%;
+        }
+    </style>
+</th:block>
+
+<div layout:fragment="content" style="margin-left:25%;margin-right:25%">
+
+    <input type="hidden" id="boardId" th:value="${board.id}">
+
+    <div class="d-flex">
+        <div class="wd50">
+            <div class="h4" th:text="${board.title}"></div>
+        </div>
+    </div>
+
+    <div class="jumbotron mgt-30">
+        <h5 class="display-5">내용</h5>
+        <div class="container">
+            <hr class="my-4">
+            <p class="lead" th:text="${board.content}"></p>
+        </div>
+    </div>
+
+    <div th:each="boardFile : ${board.boardFileDtoList}" class="text-center">
+        <img th:if="${not #strings.isEmpty(boardFile.fileUrl)}" th:src="${boardFile.fileUrl}" class="rounded mgb-15" width="800">
+    </div>
+
+    <div style="text-align: center; margin-top: 30px;">
+        <form th:action="@{/user/board/{boardId}(boardId=${board.id})}" method="get">
+            <button type="submit" class="btn btn-primary">수정하기</button>
+        </form>
+    </div>
+
+</div>
+
+</html>

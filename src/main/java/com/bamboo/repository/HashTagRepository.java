@@ -1,6 +1,5 @@
 package com.bamboo.repository;
 
-
 import com.bamboo.entity.Hashtag;
 import org.springframework.data.jpa.repository.JpaRepository;
 

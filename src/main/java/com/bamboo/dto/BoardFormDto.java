@@ -34,12 +34,14 @@ public class BoardFormDto {
     private static ModelMapper modelMapper = new ModelMapper();
 
     public Board createBoard() {
-        return modelMapper.map(this, Board.class);
+        Board board =  modelMapper.map(this, Board.class);
+        board.setDeleted(false);
+
+        return board;
     }
 
     public static BoardFormDto of(Board board) {
         return modelMapper.map(board, BoardFormDto.class);
     }
-
 
 }
