@@ -1,7 +1,6 @@
 package com.bamboo.controller;
 
-
-
+import com.bamboo.config.oauth.MyOAuth2MemberService;
 import com.bamboo.dto.MemberDeleteDto;
 import com.bamboo.dto.MemberFormDto;
 import com.bamboo.entity.Member;
@@ -12,6 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
@@ -84,18 +85,40 @@ public class MemberApiController {
         return "redirect:/login";
     }
 
+
+    //유저 정지 서비스
     @PutMapping("/deleteMember")
     public ResponseEntity<Member> deleteMember(@RequestBody MemberDeleteDto request){
-        Member updatedMember = memberService.updatedDelete(request.getEmail());
+
+        if (MyOAuth2MemberService.loginType == null) {
+            //일반 로그인인 경우
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            Authentication authentication = securityContext.getAuthentication();
+            String email = authentication.getName();
+            Member updatedMember = memberService.updatedDelete(email);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(updatedMember);
+        } else {
+            //  카카오 로그인의 경우
+            String email = MyOAuth2MemberService.userEmail;
+            Member updatedMember = memberService.updatedDelete(email);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(updatedMember);
+        }
+    }
+    //유저 복원 서비스
+    @PutMapping("/restoredMember")
+    public ResponseEntity<Member> restoredMember(@RequestBody MemberDeleteDto request){
+
+        Member updatedMember = memberService.updatedRestore(request.getEmail());
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(updatedMember);
-
     }
+
     @PostMapping("/modifyMember")
     public String modifyMember(@ModelAttribute("MemberFormDto") MemberFormDto request, BindingResult bindingResult,
     RedirectAttributes redirectAttributes) {
-
-        System.out.println(request.getEmail()+"이게 이메일이야 쟁재뱡ㅈㅂ얒버애ㅑㅂㅈ애ㅑㅈ배ㅓㅈ뱌ㅐ어ㅑ잽어ㅑㅐㅈ버ㅐㅑㅈ버ㅐㅑ저ㅑㅐ저ㅑㅐ");
         // 유효성 검사
         if (request.getName().length() < 3 || request.getName().length() > 8) {
             bindingResult.rejectValue("name", "nameLengthIncorrect", "이름은 3자 이상 8자 이하이어야 합니다.");
@@ -110,7 +133,19 @@ public class MemberApiController {
         if (bindingResult.hasErrors()) {
             return "member/modifyMember"; // 폼 페이지로 돌아가서 오류 메시지 표시
         }
-        memberService.modifyMember(request.getName(), request.getPassword(), request.getEmail());
+
+
+        if (MyOAuth2MemberService.loginType == null) {
+            //  일반 로그인 정보
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            Authentication authentication = securityContext.getAuthentication();
+            String email = authentication.getName();
+            memberService.modifyMember(request.getName(), request.getPassword(), email);
+        } else {
+            //  카카오 로그인 정보
+            String email = MyOAuth2MemberService.userEmail;
+            memberService.modifyMember(request.getName(), request.getPassword(), email);
+        }
 
         redirectAttributes.addFlashAttribute("success", true);
 

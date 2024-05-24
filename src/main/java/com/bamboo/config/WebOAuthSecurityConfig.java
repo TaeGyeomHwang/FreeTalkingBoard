@@ -1,7 +1,7 @@
 package com.bamboo.config;
 
+import com.bamboo.config.oauth.CustomAuthenticationSuccessHandler;
 import com.bamboo.config.oauth.MyOAuth2MemberService;
-import com.bamboo.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 public class WebOAuthSecurityConfig {
 
     private final MyOAuth2MemberService myOAuth2MemberService;
+    private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
     // 토큰 방식으로 인증을 하기 때문에 기존에 사용하던 플러그인, 세션 비활성화
     @Bean
@@ -33,8 +34,14 @@ public class WebOAuthSecurityConfig {
                         .requestMatchers("/login","/signup", "/css/**","/user",
                                 "/js/**","/img/**","/","/check")
                         .permitAll() // 해당 html 페이지들은 로그인 하지 않아도 접속 가능
-                        .requestMatchers("/articleList","/api/**","/testAllowed","/modifyMember", "/deleted/**")
+                        .requestMatchers("/api/**","/testAllowed",
+                                "/modifyMember","/deleteMember","/restoredMember","/api/**","/testAllowed","/modifyMember", "/deleted/**")
                         .authenticated()  //권한 필요
+
+
+                        .requestMatchers("/userManagement")
+                        .hasRole("ADMIN")  // 관리자 권한 필요
+
 
                         // 나머지 API URL은 인증 필요
                         .anyRequest().authenticated()
@@ -43,6 +50,7 @@ public class WebOAuthSecurityConfig {
                         formLogin
                                 .loginPage("/login")
                                 .defaultSuccessUrl("/")
+                                .successHandler(customAuthenticationSuccessHandler)
                 )
                 .oauth2Login(oauth2Login -> oauth2Login
                         .loginPage("/login")

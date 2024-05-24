@@ -34,7 +34,7 @@
 
                 <li class="nav-item"
                     sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
-                    <a class="nav-link" href="#">차단 유저 관리</a>
+                    <a class="nav-link" href="/memberManagement">차단 유저 관리</a>
                 </li>
 
             </ul>
@@ -58,7 +58,7 @@
                            th:value="${#authentication.getName()}">
                     <a href="#" class="nav-link" id="deleteEmail"
                        th:if="${loginType == null}"
-                       th:text="${#authentication.getName()} + '님'"></a>
+                       th:text="${#authentication.getName()}"></a>
                 </li>
                 <li>
                     <a href="/modifyMember" class="nav-link"
