@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layouts/layout1}">
 
 <!-- 사용자 스크립트 추가 -->
@@ -18,9 +17,36 @@
             var searchBy = $("#searchBy").val();
             var searchQuery = $("#searchQuery").val();
 
-            location.href = "/" + page +
+            location.href = "/deleted/" + page +
                 "?searchBy=" + encodeURIComponent(searchBy) +
                 "&searchQuery=" + encodeURIComponent(searchQuery);
+        }
+
+        function downloadExcel() {
+            var tableData = [];
+            $('table tbody tr').each(function () {
+                var rowData = [];
+                $(this).find('td').each(function () {
+                    rowData.push($(this).text());
+                });
+                tableData.push(rowData);
+            });
+
+            $.ajax({
+                type: 'POST',
+                url: '/download/excel', // 컨트롤러의 엔드포인트 URL
+                contentType: 'application/json',
+                data: JSON.stringify(tableData),
+                success: function (response) {
+                    // 파일 다운로드가 성공하면, response에 파일 데이터가 포함되어 있습니다.
+                    // response를 사용하여 추가 작업을 수행할 수 있습니다.
+                    console.log('Excel 파일 다운로드 성공');
+                },
+                error: function (xhr, status, error) {
+                    // 파일 다운로드 중 오류가 발생하면 오류 메시지를 출력합니다.
+                    console.error('Excel 파일 다운로드 오류:', error);
+                }
+            });
         }
     </script>
 
@@ -28,7 +54,7 @@
 
 <div layout:fragment="content">
 
-    <form action="/deleted/restore" role="form" method="post" th:object="${boards}">
+    <form th:action="@{'/deleted/' + ${boards.number}}" role="form" method="get" th:object="${boards}">
         <table class="table">
             <thead>
             <tr>
@@ -37,7 +63,9 @@
                 <th>이름</th>
                 <th>조회수</th>
                 <th>작성일</th>
+                <th>삭제/복원일</th>
                 <th>복원</th>
+                <th>비고</th>
             </tr>
             </thead>
             <tbody>
@@ -47,13 +75,21 @@
                 <td th:text="${board.member.getName()}"></td>
                 <td th:text="${board.hit}"></td>
                 <td th:text="${#temporals.format(board.regTime, 'yy.MM.dd HH:mm:ss')}"></td>
+                <td th:text="${#temporals.format(board.updateTime, 'yy.MM.dd HH:mm:ss')}"></td>
                 <td>
-                    <input type="hidden" name="boardId" th:value="${board.id}">
-                    <button type="submit" class="btn btn-outline-primary">복원하기</button>
+                    <form action="/deleted/restore" role="form" method="post" th:object="${boards}">
+                        <input type="hidden" name="boardId" th:value="${board.id}">
+                        <th:block th:if="${not board.isRestored}">
+                            <button type="submit" class="btn btn-outline-primary">복원하기</button>
+                        </th:block>
+                    </form>
                 </td>
+                <td th:text="${board.isRestored ? '복원됨' : ''}"></td>
             </tr>
             </tbody>
         </table>
+
+        <button class="btn btn-outline-secondary" onclick="downloadExcel()">엑셀 파일 다운로드</button>
 
         <div th:with="start=${(boards.number/maxPage)*maxPage + 1}, end=(${(boards.totalPages == 0) ? 1 : (start + (maxPage - 1) < boards.totalPages ? start + (maxPage - 1) : boards.totalPages)})">
             <ul class="pagination justify-content-center">
@@ -67,7 +103,8 @@
 
                 <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}"
                     th:classappend="${boards.number eq page - 1}?'active':''">
-                    <a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text" class="page-link">[[${page}]]</a>
+                    <a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text"
+                       class="page-link">[[${page}]]</a>
                 </li>
 
                 <li class="page-item" th:classappend="${boards.last}?'disabled'">
@@ -79,18 +116,16 @@
             </ul>
         </div>
 
-        <!--        <div class="form-inline justify-content-center" th:object="${boardSearchDto}">-->
-        <!--            <select th:field="*{searchBy}" class="form-control" style="width:auto;">-->
-        <!--                <option value="title">제목</option>-->
-        <!--                <option value="content">본문</option>-->
-        <!--                <option value="name">이름</option>-->
-        <!--            </select>-->
-        <!--            <input th:field="*{searchQuery}" type="text" class="form-control" placeholder="#을 붙여 해시태그 검색">-->
-        <!--            <button id="searchBtn" type="submit" class="btn btn-primary">검색</button>-->
-        <!--        </div>-->
-
+        <div class="form-inline justify-content-center" th:object="${boardSearchDto}">
+            <select th:field="*{searchBy}" class="form-control" style="width:auto;">
+                <option value="title">제목</option>
+                <option value="content">본문</option>
+                <option value="name">이름</option>
+            </select>
+            <input th:field="*{searchQuery}" type="text" class="form-control" placeholder="#을 붙여 해시태그 검색">
+            <button id="searchBtn" type="submit" class="btn btn-primary">검색</button>
+        </div>
     </form>
-
 </div>
 
 </html>

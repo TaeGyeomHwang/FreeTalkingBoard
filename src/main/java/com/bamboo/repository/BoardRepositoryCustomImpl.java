@@ -114,13 +114,14 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
     @Override
     public Page<Board> getDeletedBoardPage(BoardSearchDto boardSearchDto, Pageable pageable) {
-        BooleanExpression searchExpression = board.isDeleted.isTrue();
+        BooleanExpression searchExpression = board.isDeleted.isTrue()
+                .or(board.isRestored.isTrue());
 
         if (!StringUtils.isEmpty(boardSearchDto.getSearchQuery())) {
             searchExpression = searchExpression.and(searchByLike(boardSearchDto.getSearchBy(), boardSearchDto.getSearchQuery()));
         }
 
-        // 조건에 따라 삭제된 글 목록 쿼리 생성
+        // 조건에 따라 삭제된 또는 복원된 글 목록 쿼리 생성
         JPAQuery<Board> contentQuery = queryFactory
                 .selectFrom(board)
                 .leftJoin(boardHashtagMap).on(board.id.eq(boardHashtagMap.board.id))
@@ -141,4 +142,5 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
         return new PageImpl<>(content, pageable, total);
     }
+
 }
