@@ -1,5 +1,6 @@
 package com.bamboo.repository;
 
+import com.bamboo.entity.Board;
 import com.bamboo.entity.BoardHashtagMap;
 import com.bamboo.entity.Hashtag;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,4 +13,8 @@ public interface BoardHashtagMapRepository extends JpaRepository<BoardHashtagMap
 
     @Query("SELECT bhm.hashtag FROM BoardHashtagMap bhm WHERE bhm.board.id = :boardId")
     List<Hashtag> findHashtagsByBoardId(@Param("boardId") Long boardId);
+
+    List<BoardHashtagMap> findByBoard(Board board);
+
+    void deleteByBoard(Board board);
 }

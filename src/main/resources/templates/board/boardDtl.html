@@ -127,25 +127,21 @@
         </div>
 
         <th:block th:if="${loginType==null}">
-            <th:block
-                    th:if="${#authentication.getName() eq boardDto.member.email}">
+            <th:block th:if="${#authentication.getName() eq boardDto.member.email}">
                 <div class="d-inline-block">
-                    <form action="/boards/update" method="post" style="display:inline;">
+                    <form th:action="@{'/user/board/' + ${boardId}}" method="get" style="display:inline;">
                         <input type="hidden" name="boardId" th:value="${boardId}">
                         <button type="submit" class="btn btn-outline-primary">수정하기</button>
-                        <!--                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">-->
                     </form>
                 </div>
             </th:block>
         </th:block>
         <th:block th:if="${loginType!=null}">
-            <th:block
-                    th:if="${ #authentication.principal.attributes['kakao_account']['email'] eq boardDto.member.email}">
+            <th:block th:if="${#authentication.principal.attributes['kakao_account']['email'] eq boardDto.member.email}">
                 <div class="d-inline-block">
-                    <form action="/boards/update" method="post" style="display:inline;">
+                    <form th:action="@{'/user/board/' + ${boardId}}" method="get" style="display:inline;">
                         <input type="hidden" name="boardId" th:value="${boardId}">
                         <button type="submit" class="btn btn-outline-primary">수정하기</button>
-                        <!--                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">-->
                     </form>
                 </div>
             </th:block>
