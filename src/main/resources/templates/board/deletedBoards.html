@@ -38,16 +38,30 @@
                 contentType: 'application/json',
                 data: JSON.stringify(tableData),
                 success: function (response) {
-                    // 파일 다운로드가 성공하면, response에 파일 데이터가 포함되어 있습니다.
-                    // response를 사용하여 추가 작업을 수행할 수 있습니다.
+                    // Blob 객체를 생성하여 응답 데이터를 저장
+                    var blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+                    // 파일 다운로드를 위한 링크를 생성
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = 'table_data.xlsx'; // 다운로드할 파일 이름 설정
+                    link.click(); // 다운로드 트리거
+
+                    // 다운로드 후 메모리 정리
+                    window.URL.revokeObjectURL(link.href);
+
                     console.log('Excel 파일 다운로드 성공');
                 },
                 error: function (xhr, status, error) {
-                    // 파일 다운로드 중 오류가 발생하면 오류 메시지를 출력합니다.
                     console.error('Excel 파일 다운로드 오류:', error);
+                },
+                // Blob 타입의 응답을 받을 수 있도록 설정
+                xhrFields: {
+                    responseType: 'blob'
                 }
             });
         }
+
     </script>
 
 </th:block>
