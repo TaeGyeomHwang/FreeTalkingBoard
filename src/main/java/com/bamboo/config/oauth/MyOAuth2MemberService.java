@@ -57,6 +57,8 @@ public class MyOAuth2MemberService extends DefaultOAuth2UserService {
 
         if("3484473887".equals(userId)){
             authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }else if("3493271205".equals(userId)){
+            authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }else{
             authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
         }
