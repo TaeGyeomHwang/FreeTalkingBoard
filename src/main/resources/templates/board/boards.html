@@ -53,7 +53,7 @@
         </table>
 
         <div class="d-flex justify-content-end mt-3" sec:authorize="isAuthenticated()">
-            <a href="/boards/create" class="btn btn-success">글 작성하기</a>
+            <a href="/user/board/new" class="btn btn-success">글 작성하기</a>
         </div>
 
         <div th:with="start=${(boards.number/maxPage)*maxPage + 1}, end=(${(boards.totalPages == 0) ? 1 : (start + (maxPage - 1) < boards.totalPages ? start + (maxPage - 1) : boards.totalPages)})" >
