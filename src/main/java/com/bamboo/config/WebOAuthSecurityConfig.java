@@ -34,10 +34,8 @@ public class WebOAuthSecurityConfig {
                         .requestMatchers("/login","/signup", "/css/**","/user",
                                 "/js/**","/img/**","/","/check")
                         .permitAll() // 해당 html 페이지들은 로그인 하지 않아도 접속 가능
-
-
                         .requestMatchers("/api/**","/testAllowed",
-                                "/modifyMember","/deleteMember","/restoredMember")
+                                "/modifyMember","/deleteMember","/restoredMember","/api/**","/testAllowed","/modifyMember", "/deleted/**")
                         .authenticated()  //권한 필요
 
 

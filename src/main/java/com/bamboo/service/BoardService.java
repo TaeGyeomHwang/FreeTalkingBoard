@@ -39,6 +39,11 @@ public class BoardService {
         return boardRepository.getSortedBoardPage(boardSearchDto, pageable, sort);
     }
 
+    @Transactional(readOnly = true)
+    public Page<Board> getDeletedBoardPage(BoardSearchDto boardSearchDto, Pageable pageable) {
+        return boardRepository.getDeletedBoardPage(boardSearchDto, pageable);
+    }
+
     public Long saveBoard(String email, BoardDto boardDto, List<MultipartFile> boardFileList) throws Exception {
         Board board = boardDto.createBoard();
         Member member = memberRepository.findById(email)
@@ -141,6 +146,16 @@ public class BoardService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(EntityNotFoundException::new);
         board.setDeleted(true);
+        boardRepository.save(board);
+    }
+
+    public void restoreBoard(Long boardId){
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(EntityNotFoundException::new);
+        board.setDeleted(false);
+        board.setRestored(true);
+        System.out.println("삭제여부: "+board.isDeleted());
+        System.out.println("복원여부: "+board.isRestored());
         boardRepository.save(board);
     }
 
