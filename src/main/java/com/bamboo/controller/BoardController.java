@@ -1,16 +1,18 @@
 package com.bamboo.controller;
 
 import com.bamboo.config.oauth.MyOAuth2MemberService;
-import com.bamboo.dto.BoardDto;
-import com.bamboo.dto.ReReplyDto;
-import com.bamboo.dto.ReplyDto;
-import com.bamboo.dto.ReplyFormDto;
+import com.bamboo.dto.*;
+import com.bamboo.entity.Board;
 import com.bamboo.service.BoardService;
 import com.bamboo.service.ReReplyService;
 import com.bamboo.service.ReplyService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +28,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -279,4 +282,37 @@ public class BoardController {
         }
     }
 
+    //  삭제 목록 관리 페이지
+    @GetMapping(value = {"/deleted", "/deleted/{page}"})
+    public String deletedBoardPage(BoardSearchDto boardSearchDto, @PathVariable("page") Optional<Integer> page, Model model) {
+        Pageable pageable;
+        Page<Board> boards;
+
+        pageable = PageRequest.of(page.orElse(0), 10);
+        boards = boardService.getDeletedBoardPage(boardSearchDto, pageable);
+
+        model.addAttribute("boards", boards);
+        model.addAttribute("boardSearchDto", boardSearchDto);
+        model.addAttribute("maxPage", 10);
+        model.addAttribute("loginType", MyOAuth2MemberService.loginType);
+
+        return "board/deletedBoards";
+    }
+
+    //  복원 post 요청
+    @PostMapping(value = "/deleted/restore")
+    public String restoreBoard(@RequestParam("boardId") Long boardId, RedirectAttributes redirectAttributes){
+        try {
+            System.out.println("게시글 복원 시작");
+            boardService.restoreBoard(boardId);
+            // 복원 성공 시
+            redirectAttributes.addFlashAttribute("successMessage", "게시글이 성공적으로 복원되었습니다.");
+            return "redirect:/deleted";
+        } catch (Exception e) {
+            // 삭제 실패 시
+            System.out.println("게시글 복원 에러 메시지:" + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "게시글 복원 중 오류가 발생했습니다. 다시 시도해주세요.");
+            return "redirect:/deleted";
+        }
+    }
 }
