@@ -86,9 +86,9 @@ public class MemberApiController {
     }
 
 
-    //유저 정지 서비스
+    //유저 탈퇴 서비스
     @PutMapping("/deleteMember")
-    public ResponseEntity<Member> deleteMember(@RequestBody MemberDeleteDto request){
+    public ResponseEntity<Member> deleteMember(){
 
         if (MyOAuth2MemberService.loginType == null) {
             //일반 로그인인 경우
@@ -106,6 +106,19 @@ public class MemberApiController {
                     .body(updatedMember);
         }
     }
+
+    //관리자가 위험한 게시물 게시 유저 정지 서비스
+    @PutMapping("/dangerMember")
+    public ResponseEntity<Member> dangerMember(@RequestBody MemberDeleteDto request){
+
+        System.out.println("위험한 게시물 정지 이메일은 뭘까? : "+request.getEmail());
+
+        Member updatedMember = memberService.updatedDelete(request.getEmail());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(updatedMember);
+
+    }
+
     //유저 복원 서비스
     @PutMapping("/restoredMember")
     public ResponseEntity<Member> restoredMember(@RequestBody MemberDeleteDto request){
