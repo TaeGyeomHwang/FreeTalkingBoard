@@ -1,7 +1,7 @@
 
 document.addEventListener("DOMContentLoaded", function () {
     const deleteUser = document.getElementById("delete-user");
-
+    const dangerMember = document.getElementById("danger-member");
     if (deleteUser) {
         deleteUser.addEventListener("click", (event) => {
             fetch("/deleteMember", {
@@ -19,7 +19,26 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     }
+    if (dangerMember) {
+        dangerMember.addEventListener("click", (event) => {
+            fetch("/dangerMember", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: document.getElementById("dangerEmail").value,
+                    isDeleted: 1,
+                }),
+            }).then(() => {
+                alert("위험한 사용자 정지 완료했습니다.");
+                window.location.href = '/';
+            });
+        });
+    }
 });
+
+
 
 
 document.addEventListener("DOMContentLoaded", function () {

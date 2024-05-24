@@ -53,8 +53,8 @@
         </div>
         <div sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
             <button type="button" class="btn btn-outline-secondary"
-                    id="delete-user">계정 정지</button>
-            <input type="hidden" id="userEmails" th:value="${boardDto.member.email}">
+                    id="danger-member">계정 정지</button>
+            <input type="hidden" id="dangerEmail" th:value="${boardDto.member.email}">
         </div>
     </div>
     <hr class="my-4">
