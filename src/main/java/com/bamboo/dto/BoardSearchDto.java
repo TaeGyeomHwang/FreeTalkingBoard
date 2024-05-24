@@ -7,7 +7,9 @@ import lombok.Setter;
 @Setter
 public class BoardSearchDto {
 
-    private String searchBy;
+    // 검색 유형 선택 (제목, 본문, 작성자 이름, 해시태그)
+    private String SearchBy;
 
-    private String searchQuery = "";
+    // 조회할 검색어 저장 변수
+    private String SearchQuery = "";
 }

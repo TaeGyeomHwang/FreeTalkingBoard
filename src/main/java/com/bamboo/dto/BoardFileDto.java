@@ -19,7 +19,7 @@ public class BoardFileDto {
 
     private static ModelMapper modelMapper = new ModelMapper();
 
-    public static BoardFileDto of(BoardFile boardFile) {
+    public static BoardFileDto of(BoardFile boardFile){
         return modelMapper.map(boardFile, BoardFileDto.class);
     }
 }

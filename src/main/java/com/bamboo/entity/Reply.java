@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reply")
@@ -30,4 +33,9 @@ public class Reply extends BaseEntity{
 
     @Column(name = "reply_isdeleted")
     private boolean isDeleted;
+
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime regTime;
+
 }

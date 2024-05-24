@@ -1,20 +1,19 @@
 package com.bamboo.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
 @Table(name = "allowed_file_extension")
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class AllowedFileExtensions {
 
     @Id
     @Column(name = "allowed_file_extension_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -22,4 +21,10 @@ public class AllowedFileExtensions {
     private FileConfig fileConfig;
 
     private String extension;
+
+    @Builder
+    public AllowedFileExtensions(String extension) {
+        this.extension = extension;
+    }
+
 }

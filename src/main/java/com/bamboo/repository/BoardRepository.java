@@ -1,6 +1,5 @@
 package com.bamboo.repository;
 
-
 import com.bamboo.entity.Board;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,5 +36,11 @@ public interface BoardRepository extends JpaRepository<Board, Long>, QuerydslPre
     @Query("SELECT b FROM Board b WHERE b.id = :id AND b.isDeleted = false")
     Optional<Board> findById(@Param("id") Long id);
 
+    //  사용자 이름으로 글 목록 조회 쿼리
+    List<Board> findByMemberEmail(String memberEmail);
+
+    List<Board> findAllByOrderByRegTimeDesc();
+    List<Board> findAllByOrderByTitleDesc();
+    List<Board> findAllByOrderByMemberNameDesc();
 
 }

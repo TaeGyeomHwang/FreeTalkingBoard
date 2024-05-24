@@ -1,5 +1,6 @@
 package com.bamboo.dto;
 
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -21,4 +22,7 @@ public class MemberFormDto {
     @NotEmpty(message = "비번은 필수")
     @Length(min = 8, max = 16, message = "비밀번호는 8자이상, 16자 이하로 입력해주세요.")
     private String password;
+
+    private String confirmPassword;
 }
+
