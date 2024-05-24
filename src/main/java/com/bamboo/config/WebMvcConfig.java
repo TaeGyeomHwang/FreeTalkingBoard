@@ -12,9 +12,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     String uploadPath;
 
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry){
-        registry.addResourceHandler("/images/**")
-                .addResourceLocations(uploadPath, "classpath:/static/images/");
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/boards/**")
+                .addResourceLocations(uploadPath);
 
         // 전체 정적 리소스 핸들링
         registry.addResourceHandler("/**")

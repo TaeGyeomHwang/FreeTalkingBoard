@@ -25,7 +25,6 @@ public class FileService {
                 throw new RuntimeException();
             }
         }
-
         FileOutputStream fos = new FileOutputStream(fileUploadFullUrl);
         fos.write(fileData);
         fos.close();

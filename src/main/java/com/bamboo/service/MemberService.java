@@ -90,7 +90,7 @@ public class MemberService {
     }
 
 
-//    @Transactional(readOnly = true)
+    //    @Transactional(readOnly = true)
 //    public Page<Member> getMemberPage(String searchBy, String searchQuery, Pageable pageable) {
 //        if ("email".equals(searchBy)) {
 //            return memberRepository.findByEmailContaining(searchQuery, pageable);

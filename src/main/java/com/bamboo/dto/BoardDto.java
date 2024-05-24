@@ -1,7 +1,6 @@
 package com.bamboo.dto;
 
 import com.bamboo.entity.Board;
-import com.bamboo.entity.Hashtag;
 import com.bamboo.entity.Member;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +15,8 @@ import java.util.List;
 public class BoardDto {
 
     private Long id;
+
+    private String member1; // 작성자 필드 추가
 
     private String title;
 

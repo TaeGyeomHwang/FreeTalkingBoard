@@ -22,7 +22,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private String email;
 
     @Column(name = "member_name")
-    private String name;
+    private String name; // 유저 아이디
 
     private String password;
 
