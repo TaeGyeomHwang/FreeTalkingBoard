@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }),
             }).then(() => {
                 alert("사용자 정지 완료했습니다.");
-                window.location.href = '/';
+                window.location.href = '/logout';
             });
         });
     }
