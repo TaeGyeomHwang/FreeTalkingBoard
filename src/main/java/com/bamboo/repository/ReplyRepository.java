@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
@@ -14,4 +15,6 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
             "WHERE r.board.id = :boardId AND (r.isDeleted = false " +
             "OR r.id IN (SELECT rr.reply.id FROM ReReply rr WHERE rr.isDeleted = false))")
     List<Reply> findActiveAndReferencedReplies(@Param("boardId") Long boardId);
+
+    long countByRegTimeBetween(LocalDateTime start, LocalDateTime end);
 }
