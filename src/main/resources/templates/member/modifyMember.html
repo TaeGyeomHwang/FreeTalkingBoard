@@ -60,23 +60,6 @@
             <p th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}" class="fieldError">Incorrect data</p>
         </div>
 
-        <!-- 숨겨진 이메일 필드 -->
-<!--        <input type="hidden" id="userEmails"-->
-<!--               th:if="${loginType != null}"-->
-<!--               th:value="${#authentication.principal.getAttribute('kakao_account').email}">-->
-
-<!--        <input type="hidden" id="userEmails"-->
-<!--               th:if="${loginType == null}"-->
-<!--               th:value="${#authentication.getName()}">-->
-
-<!--        <input type="hidden" id="deleteEmail" name="email"-->
-<!--               th:if="${loginType != null}"-->
-<!--               th:text="${#authentication.principal.attributes['kakao_account'].email}">-->
-
-<!--        <input type="hidden" id="deleteEmail" name="email"-->
-<!--               th:if="${loginType == null}"-->
-<!--               th:text="${#authentication.getName()}">-->
-
         <button type="submit">수정</button>
     </form>
 

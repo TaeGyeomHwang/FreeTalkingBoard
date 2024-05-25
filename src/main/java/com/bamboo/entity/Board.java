@@ -1,5 +1,6 @@
 package com.bamboo.entity;
 
+import com.bamboo.dto.BoardFormDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,4 +38,9 @@ public class Board extends BaseTimeEntity{
     private Long good;
 
     private Long hit;
+
+    public void updateBoard(BoardFormDto boardFormDto) {
+        this.title = boardFormDto.getTitle();
+        this.content = boardFormDto.getContent();
+    }
 }

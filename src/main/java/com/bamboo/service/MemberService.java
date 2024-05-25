@@ -11,6 +11,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Service
 public class MemberService {
@@ -31,14 +33,26 @@ public class MemberService {
         return memberRepository.existsByEmail(email);
     }
 
-    public Member kakaoSave(String email, String nickname){
-        Member user = memberRepository.findByEmail(email)
-                .orElse(Member.builder()
-                        .email(email)
-                        .name(nickname)
-                        .role(Role.USER)
-                        .build());
-        return memberRepository.save(user);
+    public Member kakaoSave(String email, String nickname,String role){
+
+        if(role.equals("ADMIN")){
+            Member user = memberRepository.findByEmail(email)
+                    .orElse(Member.builder()
+                            .email(email)
+                            .name(nickname)
+                            .role(Role.ADMIN)
+                            .build());
+            return memberRepository.save(user);
+        }else{
+            Member user = memberRepository.findByEmail(email)
+                    .orElse(Member.builder()
+                            .email(email)
+                            .name(nickname)
+                            .role(Role.USER)
+                            .build());
+            return memberRepository.save(user);
+        }
+
     }
 
     public Member updatedDelete(String email){
@@ -76,16 +90,30 @@ public class MemberService {
     }
 
 
+//    @Transactional(readOnly = true)
+//    public Page<Member> getMemberPage(String searchBy, String searchQuery, Pageable pageable) {
+//        if ("email".equals(searchBy)) {
+//            return memberRepository.findByEmailContaining(searchQuery, pageable);
+//        } else if ("name".equals(searchBy)) {
+//            return memberRepository.findByNameContaining(searchQuery, pageable);
+//        } else {
+//            return memberRepository.findAll(pageable);
+//        }
+//    }
     @Transactional(readOnly = true)
-    public Page<Member> getMemberPage(String searchBy, String searchQuery, Pageable pageable) {
+    public Page<Member> getDeletedMembersPage(String searchBy, String searchQuery, Pageable pageable) {
         if ("email".equals(searchBy)) {
-            return memberRepository.findByEmailContaining(searchQuery, pageable);
+            return memberRepository.findByIsDeletedAndEmailContaining(true, searchQuery, pageable);
         } else if ("name".equals(searchBy)) {
-            return memberRepository.findByNameContaining(searchQuery, pageable);
+            return memberRepository.findByIsDeletedAndNameContaining(true, searchQuery, pageable);
         } else {
-            return memberRepository.findAll(pageable);
+            return memberRepository.findByIsDeleted(true, pageable);
         }
     }
-
+    //사용자의 정지 여부 판단 MemberRepository 호출
+    public boolean isUserDeleted(String email) {
+        Optional<Integer> isDeleted = memberRepository.findIsDeletedByEmail(email);
+        return isDeleted.orElse(0) == 1;
+    }
 
 }

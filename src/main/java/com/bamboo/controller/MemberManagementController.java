@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class MemberManagementController {
     private final MemberService memberService;
 
-
     @GetMapping("/memberManagement")
     public String memberManagement(@RequestParam(value = "page", defaultValue = "0") int page,
                                    @RequestParam(value = "size", defaultValue = "10") int size,
@@ -26,7 +25,7 @@ public class MemberManagementController {
                                    @RequestParam(value = "searchQuery", required = false, defaultValue = "") String searchQuery,
                                    Model model) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Member> memberPage = memberService.getMemberPage(searchBy, searchQuery, pageable);
+        Page<Member> memberPage = memberService.getDeletedMembersPage(searchBy, searchQuery, pageable);
 
         model.addAttribute("members", memberPage.getContent());
         model.addAttribute("currentPage", memberPage.getNumber());

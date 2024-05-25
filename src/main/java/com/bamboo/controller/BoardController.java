@@ -1,16 +1,18 @@
 package com.bamboo.controller;
 
 import com.bamboo.config.oauth.MyOAuth2MemberService;
-import com.bamboo.dto.BoardDto;
-import com.bamboo.dto.ReReplyDto;
-import com.bamboo.dto.ReplyDto;
-import com.bamboo.dto.ReplyFormDto;
+import com.bamboo.dto.*;
+import com.bamboo.entity.Board;
 import com.bamboo.service.BoardService;
 import com.bamboo.service.ReReplyService;
 import com.bamboo.service.ReplyService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +28,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -35,6 +38,72 @@ public class BoardController {
     private final ReplyService replyService;
     private final ReReplyService reReplyService;
 
+    //  게시글 등록 페이지
+    @GetMapping(value = "/user/board/new")
+    public String boardForm(Model model) {
+        model.addAttribute("boardFormDto", new BoardFormDto());
+        return "board/boardForm";
+    }
+
+    @PostMapping(value = "/user/board/new")
+    public String boardNew(@Valid BoardFormDto boardFormDto, BindingResult bindingResult, Model model,
+                           @RequestParam("boardFile") List<MultipartFile> boardFiles) {
+        if (bindingResult.hasErrors()) {
+            return "board/boardForm";
+        }
+
+        try {
+            //  카카오 로그인일 경우
+            if (MyOAuth2MemberService.loginType == null) {
+                SecurityContext securityContext = SecurityContextHolder.getContext();
+                Authentication authentication = securityContext.getAuthentication();
+                String email = authentication.getName();
+                boardService.saveBoard(email, boardFormDto, boardFiles);
+            } else {
+                //  일반 로그인일 경우
+                String email = MyOAuth2MemberService.userEmail;
+                boardService.saveBoard(email, boardFormDto, boardFiles);
+            }
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "게시글 등록 중 에러가 발생하였습니다.");
+            return "board/boardForm";
+        }
+
+        return "redirect:/";
+    }
+
+    @GetMapping(value = "/user/board/{boardId}")
+    public String boardForm(@PathVariable("boardId") Long boardId, Model model) {
+        try {
+            BoardFormDto boardFormDto = boardService.getBoardForm(boardId); // 수정 페이지에 필요한 데이터를 가져오기 위해 서비스 호출
+            model.addAttribute("boardFormDto", boardFormDto);
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("errorMessage", "없는 글입니다");
+            model.addAttribute("boardFormDto", new BoardFormDto());
+            return "board/boardForm";
+        }
+
+        return "board/boardForm";
+    }
+
+    @PostMapping(value = "/user/board/update/{boardId}")
+    public String boardUpdate(@PathVariable("boardId") Long boardId,
+                              @Valid BoardFormDto boardFormDto,
+                              BindingResult bindingResult,
+                              Model model,
+                              @RequestParam("boardFile") List<MultipartFile> boardFileList) {
+        if (bindingResult.hasErrors()) {
+            return "board/boardForm";
+        }
+        try {
+            boardService.updateBoard(boardFormDto, boardFileList);
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "글 수정 중 에러: " + e.getMessage());
+            return "board/boardForm";
+        }
+        return "redirect:/";
+    }
+    
     //  게시글 상세 조회
     @GetMapping(value = "/boards/{boardId}")
     public String boardDtl(@PathVariable("boardId") Long boardId, Model model) {
@@ -65,79 +134,6 @@ public class BoardController {
             return "board/boardDtl";
         }
         return "board/boardDtl";
-    }
-
-    //  게시글 작성 페이지
-    @GetMapping(value = "/boards/create")
-    public String newBoard(Model model) {
-        model.addAttribute("boardDto", new BoardDto());
-        model.addAttribute("loginType", MyOAuth2MemberService.loginType);
-        return "board/boardForm";
-    }
-
-    //  게시글 등록 post 요청
-    @PostMapping(value = "/boards/create")
-    public String boardNew(BoardDto boardDto, BindingResult bindingResult,
-                           Model model, @RequestParam("boardFiles") List<MultipartFile> boardFileList) {
-        if (bindingResult.hasErrors()) {
-            return "board/boardForm";
-        }
-        try {
-            //  카카오 로그인일 경우
-            if (MyOAuth2MemberService.loginType == null) {
-                SecurityContext securityContext = SecurityContextHolder.getContext();
-                Authentication authentication = securityContext.getAuthentication();
-                String email = authentication.getName();
-                boardService.saveBoard(email, boardDto, boardFileList);
-            } else {
-                //  일반 로그인일 경우
-                String email = MyOAuth2MemberService.userEmail;
-                boardService.saveBoard(email, boardDto, boardFileList);
-            }
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", "게시글 등록 중 에러가 발생하였습니다.");
-            return "board/boardForm";
-        }
-
-        return "redirect:/";
-    }
-
-    //  게시글 수정 페이지 접속
-    @PostMapping(value = "/boards/update")
-    public String boardUpdate(@RequestParam("boardId") Long boardId, Model model) {
-        try {
-            BoardDto boardDto = boardService.getBoardDtl(boardId);
-            model.addAttribute("boardDto", boardDto);
-            List<String> hashtags = boardService.getHashtags(boardId);
-            model.addAttribute("hashtags", hashtags);
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("errorMessage", "존재하지 않는 글 입니다.");
-            model.addAttribute("itemFormDto", new BoardDto());
-            return "board/boardForm";
-        }
-        return "board/boardForm";
-    }
-
-    //  게시글 수정 post 요청
-    @PostMapping(value = "/boards/update/{boardId}")
-    public String boardUpdateSubmit(@RequestParam("boardId") Long boardId, BoardDto boardDto, BindingResult bindingResult,
-                                    Model model, @RequestParam("boardFiles") List<MultipartFile> boardFileList) {
-        if (bindingResult.hasErrors()) {
-            return "board/boardForm";
-        }
-        try {
-            System.out.println("게시글 수정 컨트롤러 시작");
-            boardService.updateBoard(boardId, boardDto, boardFileList);
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", "게시글 등록 중 에러가 발생하였습니다.");
-            BoardDto boardDto1 = boardService.getBoardDtl(boardId);
-            model.addAttribute("boardDto", boardDto1);
-            List<String> hashtags = boardService.getHashtags(boardId);
-            model.addAttribute("hashtags", hashtags);
-            return "board/boardForm";
-        }
-
-        return "redirect:/";
     }
 
     //  게시글 삭제 post 요청
@@ -279,4 +275,37 @@ public class BoardController {
         }
     }
 
+    //  삭제 목록 관리 페이지
+    @GetMapping(value = {"/deleted", "/deleted/{page}"})
+    public String deletedBoardPage(BoardSearchDto boardSearchDto, @PathVariable("page") Optional<Integer> page, Model model) {
+        Pageable pageable;
+        Page<Board> boards;
+
+        pageable = PageRequest.of(page.orElse(0), 10);
+        boards = boardService.getDeletedBoardPage(boardSearchDto, pageable);
+
+        model.addAttribute("boards", boards);
+        model.addAttribute("boardSearchDto", boardSearchDto);
+        model.addAttribute("maxPage", 10);
+        model.addAttribute("loginType", MyOAuth2MemberService.loginType);
+
+        return "board/deletedBoards";
+    }
+
+    //  복원 post 요청
+    @PostMapping(value = "/deleted/restore")
+    public String restoreBoard(@RequestParam("boardId") Long boardId, RedirectAttributes redirectAttributes){
+        try {
+            System.out.println("게시글 복원 시작");
+            boardService.restoreBoard(boardId);
+            // 복원 성공 시
+            redirectAttributes.addFlashAttribute("successMessage", "게시글이 성공적으로 복원되었습니다.");
+            return "redirect:/deleted";
+        } catch (Exception e) {
+            // 삭제 실패 시
+            System.out.println("게시글 복원 에러 메시지:" + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "게시글 복원 중 오류가 발생했습니다. 다시 시도해주세요.");
+            return "redirect:/deleted";
+        }
+    }
 }
