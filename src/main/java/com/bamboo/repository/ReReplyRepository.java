@@ -18,5 +18,8 @@ public interface ReReplyRepository extends JpaRepository<ReReply, Long> {
     @Query("SELECT rr FROM ReReply rr WHERE rr.isDeleted = false AND rr.reply.board.id = :boardId")
     List<ReReply> findAllNotDeleted(@Param("boardId") Long boardId);
 
-    long countByRegTimeBetween(LocalDateTime start, LocalDateTime end);
+
+    List<ReReply> findByRegTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
 }
+
+

@@ -27,7 +27,6 @@ public interface BoardRepository extends JpaRepository<Board, Long>,
     List<Board> findAllByOrderByTitleDesc();
     List<Board> findAllByOrderByMemberNameDesc();
 
-    long countByRegTimeBetween(LocalDateTime start, LocalDateTime end);
-
+    List<Board> findByRegTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
 
 }

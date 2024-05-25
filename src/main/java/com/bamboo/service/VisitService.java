@@ -1,8 +1,9 @@
 package com.bamboo.service;
 
 import com.bamboo.config.oauth.MyOAuth2MemberService;
-import com.bamboo.entity.Visit;
-import com.bamboo.repository.VisitRepository;
+import com.bamboo.entity.*;
+import com.bamboo.repository.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,16 +11,23 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class VisitService {
 
-    @Autowired
-    private VisitRepository visitRepository;
+    private final VisitRepository visitRepository;
+    private final MemberRepository memberRepository;
+
+    private final BoardRepository boardRepository;
+    private final ReplyRepository replyRepository;
+    private final ReReplyRepository reReplyRepository;
 
     private Set<String> visitedEmails = new HashSet<>();
 
@@ -28,7 +36,6 @@ public class VisitService {
         LocalDate today = LocalDate.now();
 
         if (visitedEmails.contains(email + today.toString())) {
-            // 이메일이 이미 오늘 방문한 경우 아무 작업도 하지 않음
             return;
         } else {
             visitedEmails.add(email + today.toString());
@@ -75,5 +82,102 @@ public class VisitService {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusYears(1);
         return visitRepository.findByDateBetween(startDate, endDate);
+    }
+
+    public List<Member> getLastWeekMembers() {
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusDays(7);
+        return memberRepository.findByRegTimeBetween(startDate, endDate);
+    }
+
+    public List<Member> getLastMonthMembers() {
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusMonths(1);
+        return memberRepository.findByRegTimeBetween(startDate, endDate);
+    }
+
+    public List<Member> getLastYearMembers() {
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusYears(1);
+        return memberRepository.findByRegTimeBetween(startDate, endDate);
+    }
+
+    public List<String> getMemberDataForGraph(List<Member> members) {
+        return members.stream()
+                .map(member -> String.format("{\"date\": \"%s\", \"count\": 1}", member.getRegTime().toLocalDate()))
+                .collect(Collectors.toList());
+    }
+
+    public List<Board> getLastWeekBoards() {
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusDays(7);
+        return boardRepository.findByRegTimeBetween(startDate, endDate);
+    }
+
+    public List<Board> getLastMonthBoards() {
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusMonths(1);
+        return boardRepository.findByRegTimeBetween(startDate, endDate);
+    }
+
+    public List<Board> getLastYearBoards() {
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusYears(1);
+        return boardRepository.findByRegTimeBetween(startDate, endDate);
+    }
+
+    public List<Reply> getLastWeekReplies() {
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusDays(7);
+        return replyRepository.findByRegTimeBetween(startDate, endDate);
+    }
+
+    public List<Reply> getLastMonthReplies() {
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusMonths(1);
+        return replyRepository.findByRegTimeBetween(startDate, endDate);
+    }
+
+    public List<Reply> getLastYearReplies() {
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusYears(1);
+        return replyRepository.findByRegTimeBetween(startDate, endDate);
+    }
+
+    public List<ReReply> getLastWeekReReplies() {
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusDays(7);
+        return reReplyRepository.findByRegTimeBetween(startDate, endDate);
+    }
+
+    public List<ReReply> getLastMonthReReplies() {
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusMonths(1);
+        return reReplyRepository.findByRegTimeBetween(startDate, endDate);
+    }
+
+    public List<ReReply> getLastYearReReplies() {
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusYears(1);
+        return reReplyRepository.findByRegTimeBetween(startDate, endDate);
+    }
+
+    public List<String> getPostDataForGraph(List<Board> boards) {
+        return boards.stream()
+                .map(board -> String.format("{\"date\": \"%s\", \"count\": 1}", board.getRegTime().toLocalDate()))
+                .collect(Collectors.toList());
+    }
+
+    public List<String> getReplyDataForGraph(List<Reply> replies, List<ReReply> reReplies) {
+        List<String> replyData = replies.stream()
+                .map(reply -> String.format("{\"date\": \"%s\", \"count\": 1}", reply.getRegTime().toLocalDate()))
+                .collect(Collectors.toList());
+
+        List<String> reReplyData = reReplies.stream()
+                .map(reReply -> String.format("{\"date\": \"%s\", \"count\": 1}", reReply.getRegTime().toLocalDate()))
+                .collect(Collectors.toList());
+
+        replyData.addAll(reReplyData);
+        return replyData;
     }
 }

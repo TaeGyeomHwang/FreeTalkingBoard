@@ -16,5 +16,5 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
             "OR r.id IN (SELECT rr.reply.id FROM ReReply rr WHERE rr.isDeleted = false))")
     List<Reply> findActiveAndReferencedReplies(@Param("boardId") Long boardId);
 
-    long countByRegTimeBetween(LocalDateTime start, LocalDateTime end);
+    List<Reply> findByRegTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
 }
