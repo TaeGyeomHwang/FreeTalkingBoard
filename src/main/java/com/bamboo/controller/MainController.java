@@ -3,7 +3,7 @@ package com.bamboo.controller;
 import com.bamboo.config.oauth.MyOAuth2MemberService;
 import com.bamboo.dto.BoardSearchDto;
 import com.bamboo.entity.Board;
-import com.bamboo.service.BoardService;
+import com.bamboo.service.BoardServiceHwang;
 import com.bamboo.service.VisitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,7 +26,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MainController {
 
-    private final BoardService boardService;
+    private final BoardServiceHwang boardServiceHwang;
     private final VisitService visitService;
     //  글 목록 조회(메인페이지)
     @GetMapping(value = {"/", "/{page}"})
@@ -45,10 +45,10 @@ public class MainController {
 
         if (sort != null && !sort.isEmpty()) {
             pageable = PageRequest.of(page.orElse(0), 10, Sort.by(sort));
-            boards = boardService.getSortedBoardPage(boardSearchDto, pageable, sort);
+            boards = boardServiceHwang.getSortedBoardPage(boardSearchDto, pageable, sort);
         } else {
             pageable = PageRequest.of(page.orElse(0), 10);
-            boards = boardService.getBoardPage(boardSearchDto, pageable);
+            boards = boardServiceHwang.getBoardPage(boardSearchDto, pageable);
         }
 
         visitService.countVisit();
