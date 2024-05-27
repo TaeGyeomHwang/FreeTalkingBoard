@@ -108,6 +108,7 @@ public class BoardServiceHwang {
         if (boardFormDto.getHashtag() != null && !boardFormDto.getHashtag().isEmpty()) {
             String[] hashtags = boardFormDto.getHashtag().split(" ");
             for (String tagName : hashtags) {
+                System.out.println("해시태그 이름은?: "+tagName);
                 String trimmedTagName = tagName.trim();
                 if (!trimmedTagName.isEmpty()) {
                     Hashtag hashtag = hashtagRepository.findByName(trimmedTagName).orElseGet(() -> {
