@@ -19,7 +19,7 @@ public class Reply {
 
     @Id
     @Column(name = "reply_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "reply_content", nullable = false)
