@@ -1,7 +1,10 @@
 package com.bamboo.config;
 
+import com.bamboo.config.oauth.CustomAuthenticationFailureHandler;
 import com.bamboo.config.oauth.CustomAuthenticationSuccessHandler;
 import com.bamboo.config.oauth.MyOAuth2MemberService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +13,12 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+
+import javax.servlet.ServletException;
+import java.io.IOException;
 
 @RequiredArgsConstructor
 @Configuration
@@ -18,6 +26,7 @@ public class WebOAuthSecurityConfig {
 
     private final MyOAuth2MemberService myOAuth2MemberService;
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     // 토큰 방식으로 인증을 하기 때문에 기존에 사용하던 플러그인, 세션 비활성화
     @Bean
@@ -34,11 +43,12 @@ public class WebOAuthSecurityConfig {
                         .requestMatchers("/login","/signup", "/css/**","/user",
                                 "/js/**","/img/**","/","/check")
                         .permitAll() // 해당 html 페이지들은 로그인 하지 않아도 접속 가능
-
-                        .requestMatchers("/modifyMember","/deleteMember")
+                        .requestMatchers("/api/**","/testAllowed",
+                                "/modifyMember","/deleteMember","/restoredMember","/api/**","/testAllowed","/modifyMember", "/deleted/**")
                         .authenticated()  //권한 필요
 
-                        .requestMatchers("/userManagement","/modifyMember","/deleteMember","/restoredMember","/api/**","/testAllowed", "/deleted/**")
+
+                        .requestMatchers("/userManagement")
                         .hasRole("ADMIN")  // 관리자 권한 필요
 
 
@@ -50,6 +60,7 @@ public class WebOAuthSecurityConfig {
                                 .loginPage("/login")
                                 .defaultSuccessUrl("/")
                                 .successHandler(customAuthenticationSuccessHandler)
+                                .failureHandler(customAuthenticationFailureHandler)
                 )
                 .oauth2Login(oauth2Login -> oauth2Login
                         .loginPage("/login")

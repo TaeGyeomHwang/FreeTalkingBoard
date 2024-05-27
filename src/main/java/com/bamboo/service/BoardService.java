@@ -14,41 +14,47 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class BoardServiceHwang {
+public class BoardService {
+
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
     private final BoardFileRepository boardFileRepository;
     private final BoardMemberMapRepository boardMemberMapRepository;
     private final BoardHashtagMapRepository boardHashtagMapRepository;
     private final HashTagRepository hashtagRepository;
+
     private final BoardFileService boardFileService;
+
     @Transactional(readOnly = true)
     public Page<Board> getBoardPage(BoardSearchDto boardSearchDto, Pageable pageable) {
         return boardRepository.getBoardPage(boardSearchDto, pageable);
     }
+
     @Transactional(readOnly = true)
     public Page<Board> getSortedBoardPage(BoardSearchDto boardSearchDto, Pageable pageable, String sort) {
         return boardRepository.getSortedBoardPage(boardSearchDto, pageable, sort);
     }
+
     @Transactional(readOnly = true)
     public Page<Board> getDeletedBoardPage(BoardSearchDto boardSearchDto, Pageable pageable) {
         return boardRepository.getDeletedBoardPage(boardSearchDto, pageable);
     }
+
     public Long saveBoard(String email, BoardFormDto boardFormDto, List<MultipartFile> boardFiles) throws Exception {
         Board board = boardFormDto.createBoard();
         board.setDeleted(false);
+
         Member member = memberRepository.findById(email)
-                .orElseThrow(EntityNotFoundException::new);
+                        .orElseThrow(EntityNotFoundException::new);
         board.setMember(member);
         boardRepository.save(board);
+
         // 파일 저장
         if (boardFiles != null && !boardFiles.isEmpty()) {
             for (MultipartFile multipartFile : boardFiles) {
-                System.out.println("파일 이름: "+multipartFile.getOriginalFilename());
                 if (!multipartFile.isEmpty()) {
                     BoardFile boardFile = new BoardFile();
                     boardFile.setBoard(board);
@@ -56,6 +62,7 @@ public class BoardServiceHwang {
                 }
             }
         }
+
         // 해시태그 저장 및 매핑
         if (boardFormDto.getHashtag() != null && !boardFormDto.getHashtag().isEmpty()) {
             String[] hashtags = boardFormDto.getHashtag().split(" ");
@@ -68,6 +75,7 @@ public class BoardServiceHwang {
                         return newHashtag;
                     });
                     hashtagRepository.save(hashtag);
+
                     BoardHashtagMap boardHashtagMap = new BoardHashtagMap();
                     boardHashtagMap.setBoard(board);
                     boardHashtagMap.setHashtag(hashtag);
@@ -75,13 +83,18 @@ public class BoardServiceHwang {
                 }
             }
         }
+
         return board.getId();
     }
+
+
     public Long updateBoard(BoardFormDto boardFormDto, List<MultipartFile> boardFileList) throws Exception {
+
         Board board = boardRepository.findById(boardFormDto.getId())
                 .orElseThrow(EntityNotFoundException::new);
         board.updateBoard(boardFormDto);
         List<Long> boardFileIds = boardFormDto.getBoardFileIds();
+
         // 파일 ID 리스트와 파일 리스트 크기 일치 확인
         if (boardFileIds != null && boardFileIds.size() == boardFileList.size()) {
             for (int i = 0; i < boardFileList.size(); i++) {
@@ -102,13 +115,14 @@ public class BoardServiceHwang {
                 }
             }
         }
+
         // 기존 해시태그 매핑 삭제
         boardHashtagMapRepository.deleteByBoard(board);
+
         // 새로운 해시태그 저장 및 매핑
         if (boardFormDto.getHashtag() != null && !boardFormDto.getHashtag().isEmpty()) {
             String[] hashtags = boardFormDto.getHashtag().split(" ");
             for (String tagName : hashtags) {
-                System.out.println("해시태그 이름은?: "+tagName);
                 String trimmedTagName = tagName.trim();
                 if (!trimmedTagName.isEmpty()) {
                     Hashtag hashtag = hashtagRepository.findByName(trimmedTagName).orElseGet(() -> {
@@ -117,6 +131,7 @@ public class BoardServiceHwang {
                         return newHashtag;
                     });
                     hashtagRepository.save(hashtag);
+
                     BoardHashtagMap boardHashtagMap = new BoardHashtagMap();
                     boardHashtagMap.setBoard(board);
                     boardHashtagMap.setHashtag(hashtag);
@@ -124,8 +139,10 @@ public class BoardServiceHwang {
                 }
             }
         }
+
         return board.getId();
     }
+
     @Transactional(readOnly = true)
     public BoardFormDto getBoardForm(Long boardId) {
         List<BoardFile> boardFileList = boardFileRepository.findByBoardId(boardId);
@@ -134,10 +151,12 @@ public class BoardServiceHwang {
             BoardFileDto boardFileDto = BoardFileDto.of(boardFile);
             boardFileDtoList.add(boardFileDto);
         }
+
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(EntityNotFoundException::new);
         BoardFormDto boardFormDto = BoardFormDto.of(board);
         boardFormDto.setBoardFileDtoList(boardFileDtoList);
+
         // 해시태그 조회 및 설정
         List<BoardHashtagMap> boardHashtagMaps = boardHashtagMapRepository.findByBoard(board);
         List<HashtagDto> hashtagDtoList = new ArrayList<>();
@@ -150,10 +169,13 @@ public class BoardServiceHwang {
         }
         boardFormDto.setHashtagDtoList(hashtagDtoList);
         boardFormDto.setHashtag(String.join(" ", hashtags)); // 해시태그 문자열 설정
+
         // 디버그 로그 추가
         System.out.println("Hashtags: " + String.join(", ", hashtags));
+
         return boardFormDto;
     }
+
     @Transactional(readOnly = true)
     public BoardDto getBoardDtl(Long boardId){
         List<BoardFile> boardFileList = boardFileRepository.findAllByBoardIdOrderByIdAsc(boardId);
@@ -162,12 +184,15 @@ public class BoardServiceHwang {
             BoardFileDto boardFileDto = BoardFileDto.of(boardFile);
             boardFileDtoList.add(boardFileDto);
         }
+
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(EntityNotFoundException::new);
         BoardDto boardDto = BoardDto.of(board);
         boardDto.setBoardFileDtoList(boardFileDtoList);
+
         Member member = board.getMember();
         boardDto.setMember(member);
+
         return boardDto;
     }
 
@@ -215,12 +240,14 @@ public class BoardServiceHwang {
             return true;
         }
     }
+
     public void cancelBoard(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(EntityNotFoundException::new);
         board.setDeleted(true);
         boardRepository.save(board);
     }
+
     public void restoreBoard(Long boardId){
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(EntityNotFoundException::new);
