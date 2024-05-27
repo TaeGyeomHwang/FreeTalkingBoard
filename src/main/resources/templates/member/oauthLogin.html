@@ -25,6 +25,10 @@
         // 페이지가 로드될 때 리다이렉트 여부를 확인하는 함수
         window.onload = function() {
             const isRedirect = getParameterByName('redirect');
+            const isError = getParameterByName('error');
+            if(isError === 'true'){
+                alert('아이디 또는 비밀번호를 다시 확인해주세요.');
+            }
             if (isRedirect === 'true') {
                 alert('해당 계정은 사용할 수 없습니다.');
             }
