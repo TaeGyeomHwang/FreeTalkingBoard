@@ -33,23 +33,22 @@ public class MainController {
     public String boards(BoardSearchDto boardSearchDto, @PathVariable("page") Optional<Integer> page,
                          @RequestParam(value = "sort", required = false) String sort,
                          Model model) {
-        Pageable pageable;
-        Page<Board> boards;
+        int currentPage = page.orElse(0);
+        int pageSize = 10;
 
+        Pageable pageable = (sort != null && !sort.isEmpty())
+                ? PageRequest.of(currentPage, pageSize, Sort.by(sort))
+                : PageRequest.of(currentPage, pageSize);
+
+        Page<Board> boards = (sort != null && !sort.isEmpty())
+                ? boardServiceHwang.getSortedBoardPage(boardSearchDto, pageable, sort)
+                : boardServiceHwang.getBoardPage(boardSearchDto, pageable);
 
         Authentication kakaAuthentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = kakaAuthentication.getPrincipal();
         Boolean loginType2 = (principal instanceof OAuth2User);
 
         System.out.println("로그인 타입은????????????????????????????????????????????"+loginType2);
-
-        if (sort != null && !sort.isEmpty()) {
-            pageable = PageRequest.of(page.orElse(0), 10, Sort.by(sort));
-            boards = boardServiceHwang.getSortedBoardPage(boardSearchDto, pageable, sort);
-        } else {
-            pageable = PageRequest.of(page.orElse(0), 10);
-            boards = boardServiceHwang.getBoardPage(boardSearchDto, pageable);
-        }
 
         visitService.countVisit();
 
