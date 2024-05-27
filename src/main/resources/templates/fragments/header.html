@@ -48,16 +48,16 @@
 
                 <li class="nav-item" sec:authorize="isAuthenticated()">
                     <input type="hidden" class="nav-link"
-                           th:if="${loginType != null}"
+                           th:if="${loginType == true}"
                            th:value="${#authentication.principal.attributes['properties']['nickname']}">
                     <a href="#" class="nav-link" id="deleteEmail"
-                       th:if="${loginType != null}"
+                       th:if="${loginType == true}"
                        th:text="${#authentication.principal.attributes['kakao_account']['email']}"></a>
                     <input type="hidden" class="nav-link"
-                           th:if="${loginType == null}"
+                           th:if="${loginType == false}"
                            th:value="${#authentication.getName()}">
                     <a href="#" class="nav-link" id="deleteEmail"
-                       th:if="${loginType == null}"
+                       th:if="${loginType == false}"
                        th:text="${#authentication.getName()}"></a>
                 </li>
                 <li>

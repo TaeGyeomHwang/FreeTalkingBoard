@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static com.bamboo.config.oauth.MyOAuth2MemberService.loginType;
 
 @RequiredArgsConstructor
 @Controller
@@ -90,7 +90,11 @@ public class MemberApiController {
     @PutMapping("/deleteMember")
     public ResponseEntity<Member> deleteMember(){
 
-        if (MyOAuth2MemberService.loginType == null) {
+
+        Authentication kakaAuthentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = kakaAuthentication.getPrincipal();
+
+        if (!(principal instanceof OAuth2User)) {
             //일반 로그인인 경우
             SecurityContext securityContext = SecurityContextHolder.getContext();
             Authentication authentication = securityContext.getAuthentication();
@@ -100,7 +104,12 @@ public class MemberApiController {
                     .body(updatedMember);
         } else {
             //  카카오 로그인의 경우
-            String email = MyOAuth2MemberService.userEmail;
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            OAuth2User oauth2User = (OAuth2User) principal;
+            Map<String, Object> attributes = oauth2User.getAttributes();
+            Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+            String email = (String) kakaoAccount.get("email");
+
             Member updatedMember = memberService.updatedDelete(email);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(updatedMember);
@@ -148,7 +157,10 @@ public class MemberApiController {
         }
 
 
-        if (MyOAuth2MemberService.loginType == null) {
+        Authentication kakaAuthentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = kakaAuthentication.getPrincipal();
+
+        if (!(principal instanceof OAuth2User)) {
             //  일반 로그인 정보
             SecurityContext securityContext = SecurityContextHolder.getContext();
             Authentication authentication = securityContext.getAuthentication();
@@ -156,7 +168,11 @@ public class MemberApiController {
             memberService.modifyMember(request.getName(), request.getPassword(), email);
         } else {
             //  카카오 로그인 정보
-            String email = MyOAuth2MemberService.userEmail;
+
+            OAuth2User oauth2User = (OAuth2User) principal;
+            Map<String, Object> attributes = oauth2User.getAttributes();
+            Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+            String email = (String) kakaoAccount.get("email");
             memberService.modifyMember(request.getName(), request.getPassword(), email);
         }
 

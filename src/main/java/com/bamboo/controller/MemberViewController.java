@@ -3,6 +3,9 @@ package com.bamboo.controller;
 import com.bamboo.config.oauth.MyOAuth2MemberService;
 import com.bamboo.dto.MemberFormDto;
 import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -34,8 +37,12 @@ public class MemberViewController {
     @GetMapping("/modifyMember")
     public String modifyMember(Model model){
 
+        Authentication kakaAuthentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = kakaAuthentication.getPrincipal();
+        Boolean loginType2 = (principal instanceof OAuth2User);
+
         model.addAttribute("MemberFormDto", new MemberFormDto());
-        model.addAttribute("loginType", MyOAuth2MemberService.loginType);
+        model.addAttribute("loginType", loginType2);
 
         return "member/modifyMember";
     }

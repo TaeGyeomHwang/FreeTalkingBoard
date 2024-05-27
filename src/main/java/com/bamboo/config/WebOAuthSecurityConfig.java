@@ -69,7 +69,7 @@ public class WebOAuthSecurityConfig {
 
     private LogoutSuccessHandler customLogoutSuccessHandler() {
         return (request, response, authentication) -> {
-            MyOAuth2MemberService.loginType = null;
+            //MyOAuth2MemberService.loginType = null;
             // 로그아웃 후 리다이렉트
             response.sendRedirect("/");
         };
