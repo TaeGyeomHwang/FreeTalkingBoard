@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BoardRepository extends JpaRepository<Board, Long>,
@@ -26,5 +27,6 @@ public interface BoardRepository extends JpaRepository<Board, Long>,
     List<Board> findAllByOrderByTitleDesc();
     List<Board> findAllByOrderByMemberNameDesc();
 
+    List<Board> findByRegTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
 
 }
