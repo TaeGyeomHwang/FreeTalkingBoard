@@ -1,9 +1,12 @@
 package com.bamboo.service;
 
+import com.bamboo.constant.Role;
+import com.bamboo.dto.ReReplyDto;
 import com.bamboo.dto.ReplyDto;
 import com.bamboo.dto.ReplyFormDto;
 import com.bamboo.entity.Board;
 import com.bamboo.entity.Member;
+import com.bamboo.entity.ReReply;
 import com.bamboo.entity.Reply;
 import com.bamboo.repository.BoardRepository;
 import com.bamboo.repository.MemberRepository;
