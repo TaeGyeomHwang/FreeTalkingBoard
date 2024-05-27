@@ -1,19 +1,8 @@
 package com.bamboo.service;
 
-import com.bamboo.dto.BoardFileDto;
-import com.bamboo.dto.BoardFormDto;
-import com.bamboo.dto.BoardSearchDto;
-import com.bamboo.dto.HashtagDto;
-import com.bamboo.entity.Board;
-import com.bamboo.entity.BoardFile;
-import com.bamboo.entity.BoardHashtagMap;
-import com.bamboo.entity.Hashtag;
-import com.bamboo.repository.BoardFileRepository;
-import com.bamboo.repository.BoardHashtagMapRepository;
-import com.bamboo.repository.BoardRepository;
-import com.bamboo.repository.HashTagRepository;
-import com.bamboo.service.BoardFileService;
-import com.bamboo.service.HashTagService;
+import com.bamboo.dto.*;
+import com.bamboo.entity.*;
+import com.bamboo.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -99,39 +88,6 @@ public class BoardService {
         return board.getId();
     }
 
-    @Transactional(readOnly = true)
-    public BoardFormDto getBoardForm(Long boardId) {
-        List<BoardFile> boardFileList = boardFileRepository.findByBoardId(boardId);
-        List<BoardFileDto> boardFileDtoList = new ArrayList<>();
-        for (BoardFile boardFile : boardFileList) {
-            BoardFileDto boardFileDto = BoardFileDto.of(boardFile);
-            boardFileDtoList.add(boardFileDto);
-        }
-
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(EntityNotFoundException::new);
-        BoardFormDto boardFormDto = BoardFormDto.of(board);
-        boardFormDto.setBoardFileDtoList(boardFileDtoList);
-
-        // 해시태그 조회 및 설정
-        List<BoardHashtagMap> boardHashtagMaps = boardHashtagMapRepository.findByBoard(board);
-        List<HashtagDto> hashtagDtoList = new ArrayList<>();
-        List<String> hashtags = new ArrayList<>();
-        for (BoardHashtagMap boardHashtagMap : boardHashtagMaps) {
-            HashtagDto hashtagDto = new HashtagDto();
-            hashtagDto.setTagName(boardHashtagMap.getHashtag().getName());
-            hashtagDtoList.add(hashtagDto);
-            hashtags.add(boardHashtagMap.getHashtag().getName());
-        }
-        boardFormDto.setHashtagDtoList(hashtagDtoList);
-        boardFormDto.setHashtag(String.join(" ", hashtags)); // 해시태그 문자열 설정
-
-        // 디버그 로그 추가
-        System.out.println("Hashtags: " + String.join(", ", hashtags));
-
-        return boardFormDto;
-    }
-
     public Long updateBoard(BoardFormDto boardFormDto, List<MultipartFile> boardFileList) throws Exception {
         Board board = boardRepository.findById(boardFormDto.getId())
                 .orElseThrow(EntityNotFoundException::new);
@@ -184,7 +140,6 @@ public class BoardService {
 
         return board.getId();
     }
-
     @Transactional(readOnly = true)
     public BoardFormDto getBoardForm(Long boardId) {
         List<BoardFile> boardFileList = boardFileRepository.findByBoardId(boardId);
