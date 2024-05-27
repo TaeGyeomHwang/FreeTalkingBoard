@@ -32,7 +32,6 @@
             function addExistingHashtag(tag) {
                 var tagElement = `<span class="badge badge-primary mr-1">${tag} <span class="remove-tag" style="cursor: pointer;">&times;</span></span>`;
                 $("#hashtagContainer").append(tagElement);
-                $("#hashtagField").val(tag + ' ');
             }
 
             existingFiles.forEach(function(file) {
@@ -64,18 +63,12 @@
                 }
                 var tagElement = `<span class="badge badge-primary mr-1">${tag} <span class="remove-tag" style="cursor: pointer;">&times;</span></span>`;
                 $("#hashtagContainer").append(tagElement);
-                var currentTags = $("#hashtagField").val();
-                $("#hashtagField").val(currentTags + tag + ' ');
             }
 
             $("#hashtagContainer").on("click", ".remove-tag", function() {
                 var tagElement = $(this).parent();
                 var tagText = tagElement.text().slice(0, -1).trim();
                 tagElement.remove();
-                var currentTags = $("#hashtagField").val();
-                $("#hashtagField").val(currentTags.replace(tagText + ' ', ''));
-
-                // 삭제된 해시태그를 removedHashtags 필드에 추가
                 var removedHashtags = $("#removedHashtags").val();
                 $("#removedHashtags").val(removedHashtags + tagText + ' ');
             });
@@ -137,6 +130,7 @@
 
         // 폼 제출 전에 파일 입력 필드를 업데이트하여 모든 파일을 포함하도록 설정
         $('form').on('submit', function(event) {
+            // 기존 파일 필드 값 업데이트
             var fileInput = $("#hiddenFileInput")[0];
             var dt = new DataTransfer();
             $("#fileContainer span").each(function() {
@@ -148,6 +142,13 @@
                 }
             });
             fileInput.files = dt.files;
+
+            // 해시태그 필드 값 업데이트
+            var tags = [];
+            $("#hashtagContainer .badge").each(function() {
+                tags.push($(this).text().slice(0, -1).trim());
+            });
+            $("#hashtagField").val(tags.join(' '));
         });
 
         // 삭제 이벤트 바인딩
@@ -158,9 +159,6 @@
                     $.ajax({
                         url: "/user/board/delete/" + boardId,
                         type: "POST",
-                        // beforeSend: function(xhr) {
-                        //     xhr.setRequestHeader($("meta[name='_csrf_header']").attr("content"), $("meta[name='_csrf']").attr("content"));
-                        // },
                         success: function(response) {
                             alert("글이 삭제되었습니다.");
                             window.location.href = "/";
@@ -236,7 +234,6 @@
             <button type="submit" class="btn btn-primary" th:text="${#strings.isEmpty(boardFormDto.id) ? '등록' : '수정'}">저장</button>
             <button type="button" class="btn btn-danger" id="deleteButton" th:if="${not #strings.isEmpty(boardFormDto.id)}">삭제</button>
         </div>
-<!--        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">-->
     </form>
 </div>
 
