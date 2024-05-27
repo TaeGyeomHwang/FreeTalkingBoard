@@ -19,9 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService implements UserDetailsService {
 
 
-    @Autowired
+
     private final MemberRepository memberRepository;
-    @Autowired
     private final PasswordEncoder passwordEncoder;
 
     public Member saveMember(Member member){
@@ -79,7 +78,7 @@ public class MemberService implements UserDetailsService {
     }
 
     // 회원 탈퇴 메서드
-   /* public void withdrawMember(String email) {
+    /*public void withdrawMember(String email) {
         Member member = memberRepository.findByEmail(email);
         if (member == null) {
             throw new EntityNotFoundException("회원을 찾을 수 없습니다.");

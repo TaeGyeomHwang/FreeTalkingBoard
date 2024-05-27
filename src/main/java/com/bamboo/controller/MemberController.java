@@ -5,6 +5,7 @@ import com.bamboo.dto.MemberFormDto;
 import com.bamboo.dto.MemberUpdateFormDto;
 import com.bamboo.entity.Member;
 import com.bamboo.service.MemberService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +26,10 @@ import java.security.Principal;
 public class MemberController {
 
 
-
-    @Autowired
     private final MemberService memberService;
-    @Autowired
     private final PasswordEncoder passwordEncoder;
 
+    //회원가입
     @GetMapping(value = "/new")
     public String memberForm(Model model){
         model.addAttribute("memberFormDto", new MemberFormDto());
@@ -52,6 +51,7 @@ public class MemberController {
         return "redirect:/";
     }
 
+    //로그인
     @GetMapping(value = "/login")
     public String loginMember() {
         return "/member/memberLoginForm";
@@ -95,7 +95,7 @@ public class MemberController {
     }
 
     //회원 탈퇴
-   /* @PostMapping("/withdraw")
+    /*@PostMapping("/withdraw")
     public String withdrawMember(Principal principal, RedirectAttributes redirectAttributes) {
         String email = principal.getName();
         memberService.withdrawMember(email);
