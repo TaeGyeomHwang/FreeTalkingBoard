@@ -3,13 +3,12 @@ package com.bamboo.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Entity
 @Table(name = "allowed_file_extension")
 @Getter
 @Setter
-@ToString
+//@ToString
 public class AllowedFileExtensions {
 
     @Id

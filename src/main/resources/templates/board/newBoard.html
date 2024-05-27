@@ -1,220 +1,255 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/layout1}">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.css" />
-</head>
 
 <!-- 파일 첨부 style -->
-<style>
-    .uploadResult {
-        width: 100%;
-        background-color: aliceblue;
-    }
-    .uploadResult ul {
-        display: flex;
-        flex-flow: row;
-        justify-content: left;
-        align-items: center;
-    }
-    .uploadResult ul li {
-        display: inline;
-        margin-right: 10px;
-        position: relative;
-        padding-right: 20px;
-    }
-    .uploadResult ul li img{
-        width: 20px;
-    }
-</style>
+<th:block layout:fragment="css">
+    <style>
+        .uploadResult {
+            width: 100%;
+            background-color: aliceblue;
+        }
+        .uploadResult ul {
+            display: flex;
+            flex-flow: row;
+            justify-content: left;
+            align-items: center;
+        }
+        .uploadResult ul li {
+            display: inline;
+            margin-right: 10px;
+            position: relative;
+            padding-right: 20px;
+        }
+        .uploadResult ul li img{
+            width: 20px;
+        }
+    </style>
+</th:block>
 
-<!-- 취소 버튼 클릭 시 메인화면으로 돌아가는 스크립트 -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const cancelBtn = document.getElementById('cancel-btn');
-
-        cancelBtn.addEventListener('click', function () {
-            window.location.href = '/';             //Redirect to boards page
-        });
-    });
-</script>
-<body>
-<form>
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-lg-8">
-                <article>
-                    <!-- 아이디 정보 저장 -->
-                    <input type="hidden" id="board-id" th:value="${board.id}">
-                    <header class="mb-4">
-                        <input type="text" class="form-control" placeholder="제목" id="title" th:value="${board.title}">
-                    </header>
-                    <section class="mb-5">
-                        <div id='ui'></div>
-                    </section>
-
-                    <!-- 파일 첨부 -->
-                    <div class="uploadDiv">
-                        <input type="file" name="uploadFiles" id="file-upload" multiple>
-                    </div>
-                    <div class="uploadResult">
-                        <ul id="file-list">
-                        </ul>
-                    </div>
-
-                    <!-- 해시태그 -->
-                    <div class="mb-3">
-                        <div>
-                            <input type="text" id="hashtags" class="form-control" placeholder="해시태그를 추가해보세요.">
-                            <div id="hashtags-container"></div>
-                            <input type="hidden" id="hashtags-hidden" th:field="*{hashtag.id}" />
+<!-- 제목, 내용이 들어갈 부분-->
+<div layout:fragment="content">
+    <form th:object="${boardFormDto}">
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-lg-8">
+                    <article>
+                        <input type="hidden" id="diary-id" th:field="*{id}">
+                        <div class="mb-4">
+                            <input type="text" class="form-control" placeholder="제목" id="title" th:field="*{title}">
                         </div>
-                    </div>
-                    <!-- id가 있을 때는 [수정] 버튼을, 없을 때는 [등록] 버튼이 보이게 함 -->
-                    <button th:if="${board.id} != null" type="button" id="modify-btn" class="btn btn-primary btn-sm">수정하기</button>
-                    <button th:if="${board.id} == null" type="button" id="create-btn" class="btn btn-primary btn-sm">등록하기</button>
-                    <button type="button" id="cancel-btn" class="btn btn-primary btn-sm">취소하기</button>
-                </article>
+                        <section class="mb-5">
+                            <textarea class="form-control h-25" rows="10" id="content" th:field="*{content}"></textarea>
+                        </section>
+
+                        <!-- 파일 첨부 -->
+                        <div class="uploadDiv">
+                            <input type="file" name="uploadFiles" id="file-upload" multiple>
+                        </div>
+                        <div class="uploadResult">
+                            <ul id="file-list">
+                                <li></li>
+                            </ul>
+                        </div>
+
+                        <!-- 해시태그 -->
+                        <section class="mb-4">
+                            <input type="text" class="form-control" placeholder="해시태그를 추가해보세요." id="word" name="word">
+                            <div id="hashtagContainer"></div>
+                        </section>
+
+                        <!--id가 있을 때는 [수정]/[삭제] 버튼을, 없을 때는 [등록]버튼이 보이게 함 -->
+                        <button  type="button" id="modify-btn" class="btn btn-primary btn-sm">수정하기</button>
+                        <button  type="button" id="delete-btn" class="btn btn-primary btn-sm">삭제하기</button>
+                        <button  id="create-btn" class="btn btn-primary btn-sm" onclick="createBoard()">기록하기</button>
+                    </article>
+                </div>
             </div>
         </div>
-    </div>
-</form>
-<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-<!-- 글 content 스크립트 -->
-<script>
-    const editor = new toastui.Editor({
-        el: document.querySelector('#ui'),
-        previewStyle: 'vertical',
-        initialEditType: 'wysiwyg',
-        height: '500px',
-        placeholder: '내용을 입력해주세요.',
-        /* start of hooks */
-        hooks: {
-            async addImageBlobHook(blob, callback) { // 이미지 업로드 로직 커스텀
-                try {
-                    /*
-                 * 1. 에디터에 업로드한 이미지를 FormData 객체에 저장
-                 *    (이때, 컨트롤러 uploadEditorImage 메서드의 파라미터인 'image'와 formData에 append 하는 key('image')값은 동일해야 함)
-                 */
-                    const formData = new FormData();
-                    formData.append('image', blob);
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <!-- 파일 설정 값 -->
+        <input type="hidden" id="maxFileSize" th:value="${updateFileAllowedRequest.maxFileSize}">
+        <input type="hidden" id="maxFileCount" th:value="${updateFileAllowedRequest.maxFileCount}">
+        <input type="hidden" id="allowedExtensions" th:value="${updateFileAllowedRequest.extensions}">
+    </form>
 
-                    // 2. FileApiController - uploadEditorImage 메서드 호출
-                    const response = await fetch('/tui-editor/image-upload', {
-                        method: 'POST',
-                        body: formData,
+</div>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        <!-- 해시태그 스크립트 -->
+        var hashtags;
+        document.addEventListener('DOMContentLoaded', function () {
+            var wordInput = document.getElementById('word');
+            var hashtagContainer = document.getElementById('hashtagContainer');
+            var maxHashtags = 5;  // 최대 해시태그 개수
+            hashtags = [];
+
+            function addHashtag(tag) {
+                tag = tag.replace(/[\[\]]/g, '').trim();
+                if (tag && !hashtags.includes(tag) && hashtags.length < maxHashtags) {
+                    const span = document.createElement("span");
+                    span.innerText = "#" + tag + " ";
+                    span.classList.add("hashtag");
+
+                    const removeButton = document.createElement("button");
+                    removeButton.innerText = "x";
+                    removeButton.classList.add("remove-button", "btn", "btn-link", "p-0", "ml-2");
+                    removeButton.addEventListener("click", () => {
+                        hashtagContainer.removeChild(span);
+                        hashtags = hashtags.filter((hashtag) => hashtag !== tag);
                     });
 
-                    // 3. 컨트롤러에서 전달받은 디스크에 저장된 파일명
-                    const filename = await response.text();
-                    console.log('서버에 저장된 파일명 : ', filename);
-
-                    // 4. addImageBlobHook의 callback 함수를 통해, 디스크에 저장된 이미지를 에디터에 렌더링
-                    const imageUrl = `/tui-editor/image-print?filename=${filename}`;
-                    callback(imageUrl, 'image alt attribute');
-
-                } catch (error) {
-                    console.error('업로드 실패 : ', error);
+                    span.appendChild(removeButton);
+                    hashtagContainer.appendChild(span);
+                    hashtags.push(tag);
+                } else if (hashtags.length >= maxHashtags) {
+                    alert('최대 5개의 해시태그만 추가할 수 있습니다.');
                 }
             }
-        }
-    });
-    editor.setHTML(document.getElementById('article-content').value);
-</script>
 
-<!-- 파일 첨부 스크립트 -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const fileUpload = document.getElementById('file-upload');
-        const fileList = document.getElementById('file-list');
-        let selectedFiles = [];
-
-        fileUpload.addEventListener('change', function() {
-            const files = fileUpload.files;
-            fileList.innerHTML = ''; // Clear the list first
-            selectedFiles = Array.from(files); // Update selected files
-
-            selectedFiles.forEach((file, index) => {
-                const li = document.createElement('li');
-                li.textContent = file.name;
-
-                const removeBtn = document.createElement('button');
-                removeBtn.textContent = 'x';
-                removeBtn.classList.add('remove-btn');
-                removeBtn.addEventListener('click', function() {
-                    selectedFiles.splice(index, 1);
-                    updateFileList();
+            if (wordInput && hashtagContainer) {
+                wordInput.addEventListener("keydown", (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        const tag = wordInput.value.trim();
+                        if (tag) {
+                            addHashtag(tag);
+                            wordInput.value = "";
+                        }
+                    }
                 });
-
-                li.appendChild(removeBtn);
-                fileList.appendChild(li);
-            });
-        });
-
-        function updateFileList() {
-            fileList.innerHTML = '';
-            selectedFiles.forEach((file, index) => {
-                const li = document.createElement('li');
-                li.textContent = file.name;
-
-                const removeBtn = document.createElement('button');
-                removeBtn.textContent = 'x';
-                removeBtn.classList.add('remove-btn');
-                removeBtn.addEventListener('click', function() {
-                    selectedFiles.splice(index, 1);
-                    updateFileList();
+            } else {
+                console.error('One or more elements are not found:', {
+                    wordInput: wordInput,
+                    hashtagContainer: hashtagContainer
                 });
-
-                li.appendChild(removeBtn);
-                fileList.appendChild(li);
-            });
-        }
-    });
-</script>
-
-<!-- 해시태그 스크립트 -->
-<script>
-    const hashtagsInput = document.getElementById("hashtags");
-    const hashtagsContainer = document.getElementById("hashtags-container");
-    const hiddenHashtagsInput = document.getElementById("hashtags-hidden");
-
-    let hashtags = [];
-
-    function addHashtag(tag) {
-        tag = tag.replace(/[\[\]]/g, '').trim();
-        if(tag && !hashtags.includes(tag)) {
-            const span = document.createElement("span");
-            span.innerText = "#" + tag + " ";
-            span.classList.add("hashtag");
-
-            const removeButton = document.createElement("button");
-            removeButton.innerText = "x";
-            removeButton.classList.add("remove-button");
-            removeButton.addEventListener("click", () => {
-                hashtagsContainer.removeChild(span);
-                hashtags = hashtags.filter((hashtag) => hashtag !== tag);
-                hiddenHashtagsInput.value = hashtags.join(",");
-            });
-
-            span.appendChild(removeButton);
-            hashtagsContainer.appendChild(span);
-            hashtags.push(tag);
-            hiddenHashtagsInput.value = hashtags.join(",");
-        }
-    }
-
-    hashtagsInput.addEventListener("keydown", (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            const tag = hashtagsInput.value.trim();
-            if (tag) {
-                addHashtag(tag);
-                hashtagsInput.value = "";
             }
+        });
+    </script>
+
+    <script th:inline="javascript">
+        function createBoard() {
+            var form = document.querySelector('form');
+            var formData = new FormData(form);
+
+            // 해시태그 추가
+            formData.append("word", hashtags);
+
+            // 폼 데이터를 서버로 전송
+            fetch("/boards/new_board", {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Success:', data);
+                    // 성공 시 필요한 작업 수행
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         }
-    });
-</script>
-</body>
+    </script>
+
+    <!-- 파일 첨부 스크립트 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileUpload = document.getElementById('file-upload');
+            const fileList = document.getElementById('file-list');
+            let selectedFiles = [];
+
+            // 파일 설정 값 가져오기
+            const maxFileSize = parseInt(document.getElementById('maxFileSize').value);
+            const maxFileCount = parseInt(document.getElementById('maxFileCount').value);
+            const allowedExtensionsString = document.getElementById('allowedExtensions').value;
+            const allowedExtensions = allowedExtensionsString.substring(1, allowedExtensionsString.length - 1).split(',').map(function(item) {
+                return item.trim(); // 각 항목의 앞뒤 공백 제거
+            });
+
+            fileUpload.addEventListener('change', function() {
+                const files = fileUpload.files;
+                fileList.innerHTML = ''; // Clear the list first
+                selectedFiles = Array.from(files); // Update selected files
+
+                //유효성 검사
+                for (const file of selectedFiles) {
+                    const fileExtension = file.name.split('.').pop().toLowerCase();
+                    console.log('파일 확장자: '+fileExtension);
+                    for (const fileName of allowedExtensions){
+                        console.log('allowedExtensions 배열 목록: '+fileName);
+                    }
+                    if (file.size > maxFileSize) {
+                        alert('파일 크기가 너무 큽니다');
+                        fileUpload.value = '';
+                        return;
+                    }
+                    if (!allowedExtensions.includes(fileExtension)) {
+                        alert('허용되지 않는 파일 형식입니다.');
+                        fileUpload.value = '';
+                        return;
+                    }
+                }
+                if (selectedFiles.length > maxFileCount) {
+                    alert('파일 개수가 너무 많습니다.');
+                    fileUpload.value = '';
+                    return;
+                }
+
+                selectedFiles.forEach((file, index) => {
+                    const li = document.createElement('li');
+                    li.textContent = file.name;
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.textContent = 'x';
+                    removeBtn.classList.add('remove-btn', "btn", "btn-link", "p-0", "ml-2");
+                    removeBtn.addEventListener('click', function() {
+                        selectedFiles.splice(index, 1);
+                        updateFileList();
+                    });
+
+                    li.appendChild(removeBtn);
+                    fileList.appendChild(li);
+                });
+            });
+
+            function updateFileList() {
+                fileList.innerHTML = '';
+                selectedFiles.forEach((file, index) => {
+                    const li = document.createElement('li');
+                    li.textContent = file.name;
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.textContent = 'x';
+                    removeBtn.classList.add('remove-btn', "btn", "btn-link", "p-0", "ml-2");
+                    removeBtn.addEventListener('click', function() {
+                        selectedFiles.splice(index, 1);
+                        updateFileList();
+                    });
+
+                    li.appendChild(removeBtn);
+                    fileList.appendChild(li);
+                });
+            }
+        });
+    </script>
+
+    <!-- Form 데이터 전송 -->
+    <script>
+        $('.create-btn').click(function () {
+            var formData = new FormData();
+            var inputFile = $("input[type = 'file']");
+            var files = inputFile[0].files;
+
+            for (var i = 0; i<files.length; i++) {
+                console.log(files[i]);
+                formData.append("uploadFiles", files[i]);
+            }
+        })
+    </script>
+</th:block>
 </html>

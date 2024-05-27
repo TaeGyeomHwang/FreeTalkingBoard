@@ -1,2 +1,8 @@
-package com.bamboo.repository;public class BoardRepository {
+package com.bamboo.repository;
+
+import com.bamboo.entity.Board;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface BoardRepository extends JpaRepository<Board, Long> {
+
 }

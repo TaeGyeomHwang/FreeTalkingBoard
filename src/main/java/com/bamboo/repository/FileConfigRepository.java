@@ -1,2 +1,7 @@
-package com.bamboo.repository;public interface FileConfigRepository {
+package com.bamboo.repository;
+
+import com.bamboo.entity.FileConfig;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface FileConfigRepository extends JpaRepository<FileConfig, Long> {
 }
