@@ -28,22 +28,30 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
         BooleanExpression isNotDeleted = board.isDeleted.isFalse();
 
         if (searchQuery.startsWith("#")) {
+            // 해시태그로 시작하는 경우
+            System.out.println("해시태그 카테고리입니다.");
             String result = searchQuery.replace(" ", "");
             String[] hashtagNames = result.split("#");
             BooleanExpression expression = null;
             for (String hashtagName : hashtagNames) {
                 if (!hashtagName.isEmpty()) {
-                    BooleanExpression hashtagExpression = boardHashtagMap.hashtag.name.eq(hashtagName.trim());
+                    BooleanExpression hashtagExpression = boardHashtagMap.hashtag.name.eq("#"+hashtagName.trim());
                     expression = (expression == null) ? hashtagExpression : expression.or(hashtagExpression);
                 }
             }
             return expression != null ? expression.and(isNotDeleted) : isNotDeleted;
-        } else if (StringUtils.equals("title", searchBy)) {
-            return board.title.like("%" + searchQuery + "%").and(isNotDeleted);
-        } else if (StringUtils.equals("content", searchBy)) {
-            return board.content.like("%" + searchQuery + "%").and(isNotDeleted);
-        } else if (StringUtils.equals("name", searchBy)) {
-            return board.member.name.like("%" + searchQuery + "%").and(isNotDeleted);
+        } else {
+            // 해시태그가 아닌 경우
+            if (StringUtils.equals("title", searchBy)) {
+                System.out.println("제목 카테고리입니다.");
+                return board.title.like("%" + searchQuery + "%").and(isNotDeleted);
+            } else if (StringUtils.equals("content", searchBy)) {
+                System.out.println("내용 카테고리입니다.");
+                return board.content.like("%" + searchQuery + "%").and(isNotDeleted);
+            } else if (StringUtils.equals("name", searchBy)) {
+                System.out.println("이름 카테고리입니다.");
+                return board.member.name.like("%" + searchQuery + "%").and(isNotDeleted);
+            }
         }
         return isNotDeleted;
     }
