@@ -19,7 +19,7 @@ public class ReReply {
 
     @Id
     @Column(name = "re_reply_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "re_reply_content", nullable = false)
