@@ -48,6 +48,7 @@ public class BoardServiceHwang {
         // 파일 저장
         if (boardFiles != null && !boardFiles.isEmpty()) {
             for (MultipartFile multipartFile : boardFiles) {
+                System.out.println("파일 이름: "+multipartFile.getOriginalFilename());
                 if (!multipartFile.isEmpty()) {
                     BoardFile boardFile = new BoardFile();
                     boardFile.setBoard(board);
