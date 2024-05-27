@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member,String> {
@@ -44,4 +46,7 @@ public interface MemberRepository extends JpaRepository<Member,String> {
     Page<Member> findByIsDeletedAndEmailContaining(boolean isDeleted, String email, Pageable pageable);
 
     Page<Member> findByIsDeletedAndNameContaining(boolean isDeleted, String name, Pageable pageable);
+
+
+    List<Member> findByRegTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
 }

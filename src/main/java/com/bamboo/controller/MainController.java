@@ -4,6 +4,7 @@ import com.bamboo.config.oauth.MyOAuth2MemberService;
 import com.bamboo.dto.BoardSearchDto;
 import com.bamboo.entity.Board;
 import com.bamboo.service.BoardService;
+import com.bamboo.service.VisitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +23,7 @@ import java.util.Optional;
 public class MainController {
 
     private final BoardService boardService;
-
+    private final VisitService visitService;
     //  글 목록 조회(메인페이지)
     @GetMapping(value = {"/", "/{page}"})
     public String boards(BoardSearchDto boardSearchDto, @PathVariable("page") Optional<Integer> page,
@@ -38,6 +39,8 @@ public class MainController {
             pageable = PageRequest.of(page.orElse(0), 10);
             boards = boardService.getBoardPage(boardSearchDto, pageable);
         }
+
+        visitService.countVisit();
 
         model.addAttribute("boards", boards);
         model.addAttribute("boardSearchDto", boardSearchDto);

@@ -1,46 +1,32 @@
 package com.bamboo.repository;
 
 import com.bamboo.entity.Board;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.bamboo.entity.Reply;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
-public interface BoardRepository extends JpaRepository<Board, Long>, QuerydslPredicateExecutor<Board>, BoardFileRepositoryCustom {
-
-    List<Board> findByTitle(String title);
-
-    List<Board> findByTitleOrContent(String title, String content);
-
-    @Query("select i from Board i where i.content like %:content%")
-    List<Board> findByContent(@Param("content") String content);
-
-    @Query(value = "select * from board i where i.board_content like " + "%:content%", nativeQuery = true)
-    List<Board> findByContentByNative(@Param("content") String content);
-
-    @Query("SELECT b FROM Board b WHERE b.isDeleted = false ORDER BY b.regTime DESC")
-    Page<Board> findAllByIsDeletedFalse(Pageable pageable);
-
-
-    // 검색 조건이 있는 경우 추가
-    @Query("SELECT b FROM Board b WHERE b.isDeleted = false AND " +
-            "(b.title LIKE %:searchQuery% OR b.content LIKE %:searchQuery% OR b.createdBy LIKE %:searchQuery%) " +
-            "ORDER BY b.regTime DESC")
-    Page<Board> searchBoards(String searchQuery, Pageable pageable);
-
-    @Query("SELECT b FROM Board b WHERE b.id = :id AND b.isDeleted = false")
-    Optional<Board> findById(@Param("id") Long id);
+public interface BoardRepository extends JpaRepository<Board, Long>,
+        QuerydslPredicateExecutor<Board>, BoardRepositoryCustom {
 
     //  사용자 이름으로 글 목록 조회 쿼리
     List<Board> findByMemberEmail(String memberEmail);
 
+    //  글 제목으로 글 목록 조회 쿼리
+    List<Board> findByTitle(String title);
+
+    // 글 본문으로 글 목록 조회 쿼리
+    List<Board> findByContent(String content);
+
     List<Board> findAllByOrderByRegTimeDesc();
     List<Board> findAllByOrderByTitleDesc();
     List<Board> findAllByOrderByMemberNameDesc();
+
+    List<Board> findByRegTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
 
 }

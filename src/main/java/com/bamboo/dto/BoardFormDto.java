@@ -33,6 +33,10 @@ public class BoardFormDto {
 
     private static ModelMapper modelMapper = new ModelMapper();
 
+    private Long hit = 0L;
+
+    private Long good = 0L;
+
     public Board createBoard() {
         Board board =  modelMapper.map(this, Board.class);
         board.setDeleted(false);

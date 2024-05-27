@@ -8,7 +8,7 @@ import lombok.Setter;
 @Table(name = "board_file")
 @Getter
 @Setter
-public class BoardFile extends BaseEntity{
+public class BoardFile {
 
     @Id
     @Column(name = "board_file_id")
@@ -19,7 +19,7 @@ public class BoardFile extends BaseEntity{
 
     private String oriFileName;
 
-    private String fileUrl; //파일 경로
+    private String fileUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")

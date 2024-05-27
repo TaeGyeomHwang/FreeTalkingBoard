@@ -10,7 +10,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Hashtag extends BaseEntity {
+public class Hashtag {
 
     @Id
     @Column(name = "hashtag_id")
@@ -19,11 +19,4 @@ public class Hashtag extends BaseEntity {
 
     @Column(name = "hashtag_name", nullable = false)
     private String name;
-
-
-
-    public void updateHashtag(String name) {
-        this.name = name;
-    }
-
 }

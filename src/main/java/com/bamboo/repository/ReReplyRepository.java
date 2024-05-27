@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ReReplyRepository extends JpaRepository<ReReply, Long> {
@@ -16,4 +17,9 @@ public interface ReReplyRepository extends JpaRepository<ReReply, Long> {
     // 삭제되지 않은 대댓글 가져오기
     @Query("SELECT rr FROM ReReply rr WHERE rr.isDeleted = false AND rr.reply.board.id = :boardId")
     List<ReReply> findAllNotDeleted(@Param("boardId") Long boardId);
+
+
+    List<ReReply> findByRegTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
 }
+
+

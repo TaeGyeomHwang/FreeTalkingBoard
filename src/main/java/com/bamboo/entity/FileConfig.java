@@ -39,4 +39,7 @@ public class FileConfig {
         this.maxFileSize = maxFileSize;
         this.maxFileCount = maxFileCount;
     }
+
+
+
 }
