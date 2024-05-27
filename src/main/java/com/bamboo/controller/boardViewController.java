@@ -7,6 +7,9 @@ import com.bamboo.service.MultipartConfigService;
 import com.bamboo.service.fileAllowedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +28,11 @@ public class boardViewController {
     @GetMapping("/testAllowed")
     public String getPorts(Model model){
 
+        Authentication kakaAuthentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = kakaAuthentication.getPrincipal();
+        Boolean loginType2 = (principal instanceof OAuth2User);
+
+
         FileConfig maxFile = fileAllowedService.findById(1L);
 
         multipartConfigService.updateMaxUploadSize(maxFile.getMaxFileSize(), 300L);
@@ -34,7 +42,7 @@ public class boardViewController {
 
         model.addAttribute("extensions", extensions);
         model.addAttribute("allowed",fileConfig);
-        model.addAttribute("loginType",MyOAuth2MemberService.loginType);
+        model.addAttribute("loginType",loginType2);
 
         return "admin/fileAllowed";
     }

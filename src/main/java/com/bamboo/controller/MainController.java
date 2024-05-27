@@ -10,12 +10,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -32,6 +36,13 @@ public class MainController {
         Pageable pageable;
         Page<Board> boards;
 
+
+        Authentication kakaAuthentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = kakaAuthentication.getPrincipal();
+        Boolean loginType2 = (principal instanceof OAuth2User);
+
+        System.out.println("로그인 타입은????????????????????????????????????????????"+loginType2);
+
         if (sort != null && !sort.isEmpty()) {
             pageable = PageRequest.of(page.orElse(0), 10, Sort.by(sort));
             boards = boardServiceHwang.getSortedBoardPage(boardSearchDto, pageable, sort);
@@ -45,7 +56,7 @@ public class MainController {
         model.addAttribute("boards", boards);
         model.addAttribute("boardSearchDto", boardSearchDto);
         model.addAttribute("maxPage", 10);
-        model.addAttribute("loginType", MyOAuth2MemberService.loginType);
+        model.addAttribute("loginType", loginType2);
 
         return "board/boards";
     }
