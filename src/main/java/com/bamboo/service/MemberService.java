@@ -2,8 +2,12 @@ package com.bamboo.service;
 
 import com.bamboo.constant.Role;
 import com.bamboo.dto.MemberFormDto;
+import com.bamboo.entity.Board;
 import com.bamboo.entity.Member;
+import com.bamboo.repository.BoardRepository;
 import com.bamboo.repository.MemberRepository;
+import com.bamboo.repository.ReReplyRepository;
+import com.bamboo.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +21,11 @@ import java.util.Optional;
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final ReplyRepository replyRepository;
+    private final BoardRepository boardRepository;
+    private final ReReplyRepository reReplyRepository;
+
+
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public Member save(MemberFormDto dto){
@@ -63,14 +72,19 @@ public class MemberService {
                 .orElseThrow(()-> new IllegalArgumentException("정지할 이메일을 찾을 수 없습니다."));
 
         memberRepository.deletedEmail(email);
+        replyRepository.deletedReply(email);
+        reReplyRepository.deletedRe_Reply(email);
+        boardRepository.deletedBoard(email);
         return member;
     }
 
     public Member updatedRestore(String email){
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(()-> new IllegalArgumentException("정지할 이메일을 찾을 수 없습니다."));
-
+                .orElseThrow(()-> new IllegalArgumentException("복구할 이메일을 찾을 수 없습니다."));
         memberRepository.restoredEmail(email);
+        replyRepository.restoredReply(email);
+        reReplyRepository.restoredRe_Reply(email);
+        boardRepository.restoredBoard(email);
         return member;
     }
 

@@ -76,14 +76,30 @@
         const result = await response.json();
 
         const signupButton = document.getElementById("signupButton");
-        if (result.check) {
-            alert("사용 가능한 이메일입니다.");
-            isEmailChecked = true;
-            signupButton.disabled = false;
-        } else {
-            alert("사용 불가능한 이메일입니다.");
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (email.trim() === "") {
+            alert("이메일을 입력해 주세요.");
             isEmailChecked = false;
             signupButton.disabled = true;
+        } else if (!emailPattern.test(email)) {
+            alert("이메일 형식이 올바르지 않습니다.");
+            isEmailChecked = false;
+            signupButton.disabled = true;
+        } else if (email.includes(" ")) {
+            alert("이메일에 공백이 포함될 수 없습니다.");
+            isEmailChecked = false;
+            signupButton.disabled = true;
+        } else {
+            if (result.check) {
+                alert("사용 가능한 이메일입니다.");
+                isEmailChecked = true;
+                signupButton.disabled = false;
+            } else {
+                alert("사용 불가능한 이메일입니다.");
+                isEmailChecked = false;
+                signupButton.disabled = true;
+            }
         }
     }
 </script>
