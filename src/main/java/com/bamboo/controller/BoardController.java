@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,6 +29,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -51,19 +53,23 @@ public class BoardController {
         if (bindingResult.hasErrors()) {
             return "board/boardForm";
         }
+        Authentication kakaAuthentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = kakaAuthentication.getPrincipal();
 
         try {
-            //  카카오 로그인일 경우
-            if (MyOAuth2MemberService.loginType == null) {
-                SecurityContext securityContext = SecurityContextHolder.getContext();
-                Authentication authentication = securityContext.getAuthentication();
-                String email = authentication.getName();
-                boardService.saveBoard(email, boardFormDto, boardFiles);
-            } else {
-                //  일반 로그인일 경우
-                String email = MyOAuth2MemberService.userEmail;
-                boardService.saveBoard(email, boardFormDto, boardFiles);
-            }
+            //  일반 로그인일 경우
+                if (principal instanceof OAuth2User) {
+                    OAuth2User oauth2User = (OAuth2User) principal;
+                    Map<String, Object> attributes = oauth2User.getAttributes();
+                    Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+                    String email = (String) kakaoAccount.get("email");
+                    boardService.saveBoard(email, boardFormDto, boardFiles);
+                }else{  //  카카오 로그인일 경우
+                    SecurityContext securityContext = SecurityContextHolder.getContext();
+                    Authentication authentication = securityContext.getAuthentication();
+                    String email = authentication.getName();
+                    boardService.saveBoard(email, boardFormDto, boardFiles);
+                }
         } catch (Exception e) {
             model.addAttribute("errorMessage", "게시글 등록 중 에러가 발생하였습니다.");
             return "board/boardForm";
@@ -107,6 +113,10 @@ public class BoardController {
     //  게시글 상세 조회
     @GetMapping(value = "/boards/{boardId}")
     public String boardDtl(@PathVariable("boardId") Long boardId, Model model) {
+        Authentication kakaAuthentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = kakaAuthentication.getPrincipal();
+
+        Boolean loginType = (principal instanceof OAuth2User);
         try {
             boardService.setHit(boardId);
             BoardDto boardDto = boardService.getBoardDtl(boardId);
@@ -121,7 +131,7 @@ public class BoardController {
             model.addAttribute("rereplys", reReplyDtos);
             model.addAttribute("boardId", boardId);
             model.addAttribute("replyFormDto", new ReplyFormDto());
-            model.addAttribute("loginType", MyOAuth2MemberService.loginType);
+            model.addAttribute("loginType", loginType);
         } catch (EntityNotFoundException e) {
             model.addAttribute("errorMessage", "존재하지 않는 게시글 입니다.");
             model.addAttribute("boardDto", new BoardDto());
@@ -130,7 +140,7 @@ public class BoardController {
             model.addAttribute("rereplys", new ArrayList<>());
             model.addAttribute("boardId", boardId);
             model.addAttribute("replyFormDto", new ReplyFormDto());
-            model.addAttribute("loginType", MyOAuth2MemberService.loginType);
+            model.addAttribute("loginType", loginType);
             return "board/boardDtl";
         }
         return "board/boardDtl";
@@ -158,7 +168,14 @@ public class BoardController {
     public String boardGood(@PathVariable("boardId") Long boardId, RedirectAttributes redirectAttributes, Model model) {
         try {
             System.out.println("좋아요 시작");
-            if (MyOAuth2MemberService.loginType == null) {
+
+
+            Authentication kakaAuthentication = SecurityContextHolder.getContext().getAuthentication();
+            Object principal = kakaAuthentication.getPrincipal();
+
+
+
+            if (!(principal instanceof OAuth2User)) {
                 SecurityContext securityContext = SecurityContextHolder.getContext();
                 Authentication authentication = securityContext.getAuthentication();
                 String email = authentication.getName();
@@ -168,11 +185,15 @@ public class BoardController {
                     redirectAttributes.addFlashAttribute("errorMessage", "좋아요는 한 게시글당 한 번만 누를 수 있습니다.");
                 }
             } else {
-                String email = MyOAuth2MemberService.userEmail;
-                Boolean isTrue = boardService.setGood(boardId, email);
-                if (!isTrue) {
-                    System.out.println("좋아요는 한 게시글당 한 번만 누를 수 있습니다.");
-                    redirectAttributes.addFlashAttribute("errorMessage", "좋아요는 한 게시글당 한 번만 누를 수 있습니다.");
+                    OAuth2User oauth2User = (OAuth2User) principal;
+                    Map<String, Object> attributes = oauth2User.getAttributes();
+                    Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+                    String email = (String) kakaoAccount.get("email");
+
+                    Boolean isTrue = boardService.setGood(boardId, email);
+                    if (!isTrue) {
+                        System.out.println("좋아요는 한 게시글당 한 번만 누를 수 있습니다.");
+                        redirectAttributes.addFlashAttribute("errorMessage", "좋아요는 한 게시글당 한 번만 누를 수 있습니다.");
                 }
             }
         } catch (EntityNotFoundException e) {
@@ -196,14 +217,22 @@ public class BoardController {
         }
         try {
             System.out.println("댓글 등록 시작");
-            if (MyOAuth2MemberService.loginType == null) {
+
+            Authentication kakaAuthentication = SecurityContextHolder.getContext().getAuthentication();
+            Object principal = kakaAuthentication.getPrincipal();
+
+
+            if (!(principal instanceof OAuth2User)) {
                 SecurityContext securityContext = SecurityContextHolder.getContext();
                 Authentication authentication = securityContext.getAuthentication();
                 String email = authentication.getName();
                 replyService.saveReply(email, boardId, replyFormDto);
             } else {
-                String email = MyOAuth2MemberService.userEmail;
-                replyService.saveReply(email, boardId, replyFormDto);
+                    OAuth2User oauth2User = (OAuth2User) principal;
+                    Map<String, Object> attributes = oauth2User.getAttributes();
+                    Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+                    String email = (String) kakaoAccount.get("email");
+                    replyService.saveReply(email, boardId, replyFormDto);
             }
         } catch (Exception e) {
             System.out.println("에러 메시지:" + e.getMessage());
@@ -239,15 +268,22 @@ public class BoardController {
             return "redirect:/boards/" + boardId;
         }
         try {
+            Authentication kakaAuthentication = SecurityContextHolder.getContext().getAuthentication();
+            Object principal = kakaAuthentication.getPrincipal();
+
+
             System.out.println("대댓글 등록 시작");
-            if (MyOAuth2MemberService.loginType == null) {
+            if (!(principal instanceof OAuth2User)) {
                 SecurityContext securityContext = SecurityContextHolder.getContext();
                 Authentication authentication = securityContext.getAuthentication();
                 String email = authentication.getName();
                 reReplyService.saveReReply(email, boardId, replyFormDto);
             } else {
-                String email = MyOAuth2MemberService.userEmail;
-                reReplyService.saveReReply(email, boardId, replyFormDto);
+                    OAuth2User oauth2User = (OAuth2User) principal;
+                    Map<String, Object> attributes = oauth2User.getAttributes();
+                    Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+                    String email = (String) kakaoAccount.get("email");
+                    reReplyService.saveReReply(email, boardId, replyFormDto);
             }
         } catch (Exception e) {
             System.out.println("댓글 삭제 에러 메시지:" + e.getMessage());
@@ -278,6 +314,13 @@ public class BoardController {
     //  삭제 목록 관리 페이지
     @GetMapping(value = {"/deleted", "/deleted/{page}"})
     public String deletedBoardPage(BoardSearchDto boardSearchDto, @PathVariable("page") Optional<Integer> page, Model model) {
+
+
+        Authentication kakaAuthentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = kakaAuthentication.getPrincipal();
+        Boolean loginType2 = (principal instanceof OAuth2User);
+
+
         Pageable pageable;
         Page<Board> boards;
 
@@ -287,7 +330,7 @@ public class BoardController {
         model.addAttribute("boards", boards);
         model.addAttribute("boardSearchDto", boardSearchDto);
         model.addAttribute("maxPage", 10);
-        model.addAttribute("loginType", MyOAuth2MemberService.loginType);
+        model.addAttribute("loginType", loginType2);
 
         return "board/deletedBoards";
     }

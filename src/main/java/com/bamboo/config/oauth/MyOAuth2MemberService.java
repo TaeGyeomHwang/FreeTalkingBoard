@@ -20,7 +20,6 @@ import java.util.*;
 public class MyOAuth2MemberService extends DefaultOAuth2UserService {
     private final MemberService memberService;
     public static String loginType = null;
-    public static String userEmail = "";
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -30,11 +29,10 @@ public class MyOAuth2MemberService extends DefaultOAuth2UserService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        loginType = "kakao";
+        //loginType = "kakao";
 
         Map<String, Object> attributes = new HashMap<>(oAuth2User.getAttributes());
         Map<String, String> responseMap = (Map<String, String>) attributes.get("kakao_account");
-        userEmail = responseMap.get("email");
 
         Map<String, String> properties = (Map<String, String>) attributes.get("properties");
         String userNickname = properties.get("nickname");
@@ -45,14 +43,14 @@ public class MyOAuth2MemberService extends DefaultOAuth2UserService {
         // 기본 권한 설정
         Set<GrantedAuthority> authorities;
         if ("3484473887".equals(userId)) {
-            memberService.kakaoSave(userEmail, userNickname,"ADMIN");
+            memberService.kakaoSave(responseMap.get("email"), userNickname,"ADMIN");
         } else {
-            memberService.kakaoSave(userEmail, userNickname,"USER");
+            memberService.kakaoSave(responseMap.get("email"), userNickname,"USER");
         }
 
-        if (memberService.isUserDeleted(userEmail)) {
+        if (memberService.isUserDeleted(responseMap.get("email"))) {
             // 모든 권한 제거
-            loginType = null;
+            //loginType = null;
             System.out.println("이용 불가능한 사용자입니다...3473275983257982357932758325789237598235798237러ㅏ인롸ㅓㄴㅇ로ㅑㅓ로ㅑㄷㅈ롣ㅈ로ㅑ젿로ㅓㅐㅑ젿ㄹ");
             authorities = new HashSet<>(oAuth2User.getAuthorities());
             authorities.removeAll(authorities); // 모든 권한 제거
@@ -70,7 +68,7 @@ public class MyOAuth2MemberService extends DefaultOAuth2UserService {
 
 
         // 사용자 권한 설정
-        attributes.put("email", userEmail); // 이메일 추가
+        attributes.put("email", responseMap.get("email")); // 이메일 추가
 
         return new DefaultOAuth2User(authorities, attributes, "email");
     }

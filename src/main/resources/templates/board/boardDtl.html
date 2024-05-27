@@ -126,7 +126,7 @@
             </button>
         </div>
 
-        <th:block th:if="${loginType==null}">
+        <th:block th:if="${loginType == false}">
             <th:block th:if="${#authentication.getName() eq boardDto.member.email}">
                 <div class="d-inline-block">
                     <form th:action="@{'/user/board/' + ${boardId}}" method="get" style="display:inline;">
@@ -136,7 +136,7 @@
                 </div>
             </th:block>
         </th:block>
-        <th:block th:if="${loginType!=null}">
+        <th:block th:if="${loginType==true}">
             <th:block th:if="${#authentication.principal.attributes['kakao_account']['email'] eq boardDto.member.email}">
                 <div class="d-inline-block">
                     <form th:action="@{'/user/board/' + ${boardId}}" method="get" style="display:inline;">
@@ -147,7 +147,7 @@
             </th:block>
         </th:block>
 
-        <th:block th:if="${loginType==null}">
+        <th:block th:if="${loginType== false}">
             <th:block
                     th:if="${#authentication.getName() eq boardDto.member.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
                 <div class="d-inline-block">
@@ -158,7 +158,7 @@
                 </div>
             </th:block>
         </th:block>
-        <th:block th:if="${loginType!=null}">
+        <th:block th:if="${loginType == true}">
             <th:block
                     th:if="${#authentication.principal.attributes['kakao_account']['email'] eq boardDto.member.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
                 <div class="d-inline-block">
@@ -207,7 +207,7 @@
         </div>
         <div class="col-sm-1">
             <!-- 삭제 버튼 -->
-            <th:block th:if="${loginType==null}">
+            <th:block th:if="${loginType== false}">
                 <th:block
                         th:if="${#authentication.getName() eq boardDto.member.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
                     <form action="/boards/comments/delete" method="post">
@@ -218,7 +218,7 @@
                     </form>
                 </th:block>
             </th:block>
-            <th:block th:if="${loginType!=null}">
+            <th:block th:if="${loginType== true}">
                 <th:block
                         th:if="${#authentication.principal.attributes['kakao_account']['email'] eq boardDto.member.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
                     <form action="/boards/comments/delete" method="post">
@@ -249,7 +249,7 @@
                     </div>
                     <div class="col-sm-1">
                         <!-- 대댓글 삭제 버튼 -->
-                        <th:block th:if="${loginType==null}">
+                        <th:block th:if="${loginType==false}">
                             <th:block
                                     th:if="${#authentication.getName() eq boardDto.member.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
                                 <form action="/boards/comments/delete/rereply" method="post">
@@ -260,7 +260,7 @@
                                 </form>
                             </th:block>
                         </th:block>
-                        <th:block th:if="${loginType!=null}">
+                        <th:block th:if="${loginType == true}">
                             <th:block
                                     th:if="${#authentication.principal.attributes['kakao_account']['email'] eq boardDto.member.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
                                 <form action="/boards/comments/delete/rereply" method="post">
