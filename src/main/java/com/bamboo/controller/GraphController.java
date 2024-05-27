@@ -7,6 +7,9 @@ import com.bamboo.entity.ReReply;
 import com.bamboo.entity.Visit;
 import com.bamboo.service.VisitService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +27,11 @@ public class GraphController {
 
     @GetMapping("/graph")
     public String showGraph(@RequestParam(required = false, defaultValue = "week") String period, Model model) {
+        Authentication kakaAuthentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = kakaAuthentication.getPrincipal();
+        Boolean loginType2 = (principal instanceof OAuth2User);
+        model.addAttribute("loginType", loginType2);
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         List<Visit> visits;
         List<Member> members;
