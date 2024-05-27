@@ -18,7 +18,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class BoardService {
+public class BoardServiceHwang {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
     private final BoardFileRepository boardFileRepository;

@@ -3,7 +3,7 @@ package com.bamboo.controller;
 import com.bamboo.config.oauth.MyOAuth2MemberService;
 import com.bamboo.dto.*;
 import com.bamboo.entity.Board;
-import com.bamboo.service.BoardService;
+import com.bamboo.service.BoardServiceHwang;
 import com.bamboo.service.ReReplyService;
 import com.bamboo.service.ReplyService;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,7 +33,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BoardController {
 
-    private final BoardService boardService;
+    private final BoardServiceHwang boardServiceHwang;
     private final ReplyService replyService;
     private final ReReplyService reReplyService;
 
@@ -58,11 +57,11 @@ public class BoardController {
                 SecurityContext securityContext = SecurityContextHolder.getContext();
                 Authentication authentication = securityContext.getAuthentication();
                 String email = authentication.getName();
-                boardService.saveBoard(email, boardFormDto, boardFiles);
+                boardServiceHwang.saveBoard(email, boardFormDto, boardFiles);
             } else {
                 //  일반 로그인일 경우
                 String email = MyOAuth2MemberService.userEmail;
-                boardService.saveBoard(email, boardFormDto, boardFiles);
+                boardServiceHwang.saveBoard(email, boardFormDto, boardFiles);
             }
         } catch (Exception e) {
             model.addAttribute("errorMessage", "게시글 등록 중 에러가 발생하였습니다.");
@@ -75,7 +74,7 @@ public class BoardController {
     @GetMapping(value = "/user/board/{boardId}")
     public String boardForm(@PathVariable("boardId") Long boardId, Model model) {
         try {
-            BoardFormDto boardFormDto = boardService.getBoardForm(boardId); // 수정 페이지에 필요한 데이터를 가져오기 위해 서비스 호출
+            BoardFormDto boardFormDto = boardServiceHwang.getBoardForm(boardId); // 수정 페이지에 필요한 데이터를 가져오기 위해 서비스 호출
             model.addAttribute("boardFormDto", boardFormDto);
         } catch (EntityNotFoundException e) {
             model.addAttribute("errorMessage", "없는 글입니다");
@@ -96,7 +95,7 @@ public class BoardController {
             return "board/boardForm";
         }
         try {
-            boardService.updateBoard(boardFormDto, boardFileList);
+            boardServiceHwang.updateBoard(boardFormDto, boardFileList);
         } catch (Exception e) {
             model.addAttribute("errorMessage", "글 수정 중 에러: " + e.getMessage());
             return "board/boardForm";
@@ -108,11 +107,11 @@ public class BoardController {
     @GetMapping(value = "/boards/{boardId}")
     public String boardDtl(@PathVariable("boardId") Long boardId, Model model) {
         try {
-            boardService.setHit(boardId);
-            BoardDto boardDto = boardService.getBoardDtl(boardId);
+            boardServiceHwang.setHit(boardId);
+            BoardDto boardDto = boardServiceHwang.getBoardDtl(boardId);
             model.addAttribute("boardDto", boardDto);
 
-            List<String> hashtags = boardService.getHashtags(boardId);
+            List<String> hashtags = boardServiceHwang.getHashtags(boardId);
             model.addAttribute("hashtags", hashtags);
 
             List<ReplyDto> replyDtos = replyService.getReplyList(boardId);
@@ -141,7 +140,7 @@ public class BoardController {
     public String boardDelete(@RequestParam("boardId") Long boardId, RedirectAttributes redirectAttributes) {
         try {
             System.out.println("게시글 삭제 시작");
-            boardService.cancelBoard(boardId);
+            boardServiceHwang.cancelBoard(boardId);
             // 삭제 성공 시
             redirectAttributes.addFlashAttribute("successMessage", "게시글이 성공적으로 삭제되었습니다.");
             return "redirect:/";
@@ -162,14 +161,14 @@ public class BoardController {
                 SecurityContext securityContext = SecurityContextHolder.getContext();
                 Authentication authentication = securityContext.getAuthentication();
                 String email = authentication.getName();
-                Boolean isTrue = boardService.setGood(boardId, email);
+                Boolean isTrue = boardServiceHwang.setGood(boardId, email);
                 if (!isTrue) {
                     System.out.println("좋아요는 한 게시글당 한 번만 누를 수 있습니다.");
                     redirectAttributes.addFlashAttribute("errorMessage", "좋아요는 한 게시글당 한 번만 누를 수 있습니다.");
                 }
             } else {
                 String email = MyOAuth2MemberService.userEmail;
-                Boolean isTrue = boardService.setGood(boardId, email);
+                Boolean isTrue = boardServiceHwang.setGood(boardId, email);
                 if (!isTrue) {
                     System.out.println("좋아요는 한 게시글당 한 번만 누를 수 있습니다.");
                     redirectAttributes.addFlashAttribute("errorMessage", "좋아요는 한 게시글당 한 번만 누를 수 있습니다.");
@@ -282,7 +281,7 @@ public class BoardController {
         Page<Board> boards;
 
         pageable = PageRequest.of(page.orElse(0), 10);
-        boards = boardService.getDeletedBoardPage(boardSearchDto, pageable);
+        boards = boardServiceHwang.getDeletedBoardPage(boardSearchDto, pageable);
 
         model.addAttribute("boards", boards);
         model.addAttribute("boardSearchDto", boardSearchDto);
@@ -297,7 +296,7 @@ public class BoardController {
     public String restoreBoard(@RequestParam("boardId") Long boardId, RedirectAttributes redirectAttributes){
         try {
             System.out.println("게시글 복원 시작");
-            boardService.restoreBoard(boardId);
+            boardServiceHwang.restoreBoard(boardId);
             // 복원 성공 시
             redirectAttributes.addFlashAttribute("successMessage", "게시글이 성공적으로 복원되었습니다.");
             return "redirect:/deleted";

@@ -104,8 +104,8 @@
 
     <div class="d-flex">
         <div class="h4 text-left">
-            <div th:each="hashtag : ${hashtags}" class="text-center">
-                <small class="lead" th:text="${hashtag}"></small>
+            <div class="text-center">
+                <small class="lead" th:each="hashtag : ${hashtags}" th:text="${hashtag} + ' '"></small>
             </div>
         </div>
     </div>
