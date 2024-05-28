@@ -1,5 +1,6 @@
 package com.bamboo;
 
+import com.bamboo.service.MemberService;
 import com.bamboo.service.fileAllowedService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,9 +19,10 @@ public class BambooApplication {
         SpringApplication.run(BambooApplication.class, args);}
 
     @Bean
-    public CommandLineRunner run(fileAllowedService fileAllowedService) {
+    public CommandLineRunner run(fileAllowedService fileAllowedService, MemberService memberService) {
         return args -> {
             fileAllowedService.defaultFileAllowed();
+            memberService.saveAdmin();
         };
     }
 }
