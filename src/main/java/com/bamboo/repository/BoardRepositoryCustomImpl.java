@@ -35,7 +35,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
             BooleanExpression expression = null;
             for (String hashtagName : hashtagNames) {
                 if (!hashtagName.isEmpty()) {
-                    BooleanExpression hashtagExpression = boardHashtagMap.hashtag.name.eq("#"+hashtagName.trim());
+                    BooleanExpression hashtagExpression = boardHashtagMap.hashtag.name.eq("#" + hashtagName.trim());
                     expression = (expression == null) ? hashtagExpression : expression.or(hashtagExpression);
                 }
             }
@@ -65,19 +65,31 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
                 .selectFrom(board)
                 .leftJoin(boardHashtagMap).on(board.id.eq(boardHashtagMap.board.id))
                 .where(searchExpression)
+                .groupBy(
+                        board.id,
+                        board.content,
+                        board.good,
+                        board.hit,
+                        board.isDeleted,
+                        board.isRestored,
+                        board.member.email,
+                        board.regTime,
+                        board.title,
+                        board.updateTime
+                )
                 .orderBy(board.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 
         // 전체 count 수 쿼리
         JPAQuery<Long> countQuery = queryFactory
-                .select(board.id.count())
+                .select(board.id.countDistinct())  // Use countDistinct to avoid duplicates
                 .from(board)
                 .leftJoin(boardHashtagMap).on(board.id.eq(boardHashtagMap.board.id))
                 .where(searchExpression);
 
         List<Board> content = contentQuery.fetch();
-        long total = countQuery.fetchCount();
+        long total = countQuery.fetchOne();  // fetchOne instead of fetchCount for distinct count
 
         return new PageImpl<>(content, pageable, total);
     }
@@ -109,13 +121,25 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
                 .selectFrom(board)
                 .leftJoin(boardHashtagMap).on(board.id.eq(boardHashtagMap.board.id))
                 .where(searchExpression)
+                .groupBy(
+                        board.id,
+                        board.content,
+                        board.good,
+                        board.hit,
+                        board.isDeleted,
+                        board.isRestored,
+                        board.member.email,
+                        board.regTime,
+                        board.title,
+                        board.updateTime
+                )
                 .orderBy(orderSpecifier)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 
         // 쿼리문 및 총 개수 가져오기
         List<Board> content = query.fetch();
-        long total = query.fetchCount();
+        long total = query.fetchCount();  // Ensure count is distinct
 
         return new PageImpl<>(content, pageable, total);
     }
@@ -134,19 +158,31 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
                 .selectFrom(board)
                 .leftJoin(boardHashtagMap).on(board.id.eq(boardHashtagMap.board.id))
                 .where(searchExpression)
+                .groupBy(
+                        board.id,
+                        board.content,
+                        board.good,
+                        board.hit,
+                        board.isDeleted,
+                        board.isRestored,
+                        board.member.email,
+                        board.regTime,
+                        board.title,
+                        board.updateTime
+                )
                 .orderBy(board.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 
         // 전체 count 수 쿼리
         JPAQuery<Long> countQuery = queryFactory
-                .select(board.id.count())
+                .select(board.id.countDistinct())  // Use countDistinct to avoid duplicates
                 .from(board)
                 .leftJoin(boardHashtagMap).on(board.id.eq(boardHashtagMap.board.id))
                 .where(searchExpression);
 
         List<Board> content = contentQuery.fetch();
-        long total = countQuery.fetchCount();
+        long total = countQuery.fetchOne();  // fetchOne instead of fetchCount for distinct count
 
         return new PageImpl<>(content, pageable, total);
     }

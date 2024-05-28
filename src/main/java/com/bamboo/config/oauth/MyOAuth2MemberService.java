@@ -44,7 +44,9 @@ public class MyOAuth2MemberService extends DefaultOAuth2UserService {
         Set<GrantedAuthority> authorities;
         if ("3484473887".equals(userId)) {
             memberService.kakaoSave(responseMap.get("email"), userNickname,"ADMIN");
-        } else {
+        } else if ("3493271205".equals(userId)) {
+            memberService.kakaoSave(responseMap.get("email"), userNickname,"ADMIN");
+        }else {
             memberService.kakaoSave(responseMap.get("email"), userNickname,"USER");
         }
 
