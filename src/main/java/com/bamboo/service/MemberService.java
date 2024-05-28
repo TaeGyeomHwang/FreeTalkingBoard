@@ -38,6 +38,16 @@ public class MemberService {
                 .build());
     }
 
+    public Member saveAdmin(){
+        return memberRepository.save(Member.builder()
+                .email("dltjdhwd1235@naver.com")
+                .name("관리자계정")
+                //패스워드 암호화
+                .password(bCryptPasswordEncoder.encode("12341234"))
+                .role(Role.ADMIN)
+                .build());
+    }
+
     public boolean findByEmail(String email){
         return memberRepository.existsByEmail(email);
     }
