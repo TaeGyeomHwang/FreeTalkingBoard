@@ -42,7 +42,7 @@ public class WebOAuthSecurityConfig {
                         .requestMatchers("/modifyMember","/deleteMember")
                         .authenticated()  //권한 필요
 
-                        .requestMatchers("/userManagement","/modifyMember","/deleteMember","/restoredMember","/api/**","/testAllowed", "/deleted/**")
+                        .requestMatchers("/userManagement","/deleteMember","/restoredMember","/api/**","/testAllowed", "/deleted/**")
                         .hasRole("ADMIN")  // 관리자 권한 필요
 
 
