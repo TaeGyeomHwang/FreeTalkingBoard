@@ -26,7 +26,7 @@ public class Board extends BaseTimeEntity{
     private String title;
 
     @Lob
-    @Column(name = "board_content", nullable = false)
+    @Column(name = "board_content", nullable = false, columnDefinition = "varchar(10000)")
     private String content;
 
     @Column(name = "board_is_deleted")

@@ -104,8 +104,8 @@
 
     <div class="d-flex">
         <div class="h4 text-left">
-            <div th:each="hashtag : ${hashtags}" class="text-center">
-                <small class="lead" th:text="'#'+${hashtag}"></small>
+            <div class="text-center">
+                <small class="lead" th:each="hashtag : ${hashtags}" th:text="${hashtag} + ' '"></small>
             </div>
         </div>
     </div>
@@ -209,7 +209,7 @@
             <!-- 삭제 버튼 -->
             <th:block th:if="${loginType== false}">
                 <th:block
-                        th:if="${#authentication.getName() eq boardDto.member.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
+                        th:if="${#authentication.getName() eq reply.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
                     <form action="/boards/comments/delete" method="post">
                         <input type="hidden" name="replyId" th:value="${reply.id}">
                         <input type="hidden" name="boardId" th:value="${boardId}">
@@ -220,7 +220,7 @@
             </th:block>
             <th:block th:if="${loginType== true}">
                 <th:block
-                        th:if="${#authentication.principal.attributes['kakao_account']['email'] eq boardDto.member.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
+                        th:if="${#authentication.principal.attributes['kakao_account']['email'] eq reply.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
                     <form action="/boards/comments/delete" method="post">
                         <input type="hidden" name="replyId" th:value="${reply.id}">
                         <input type="hidden" name="boardId" th:value="${boardId}">
@@ -251,7 +251,7 @@
                         <!-- 대댓글 삭제 버튼 -->
                         <th:block th:if="${loginType==false}">
                             <th:block
-                                    th:if="${#authentication.getName() eq boardDto.member.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
+                                    th:if="${#authentication.getName() eq rereply.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
                                 <form action="/boards/comments/delete/rereply" method="post">
                                     <input type="hidden" name="rereplyId" th:value="${rereply.id}">
                                     <input type="hidden" name="boardId" th:value="${boardId}">
@@ -262,7 +262,7 @@
                         </th:block>
                         <th:block th:if="${loginType == true}">
                             <th:block
-                                    th:if="${#authentication.principal.attributes['kakao_account']['email'] eq boardDto.member.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
+                                    th:if="${#authentication.principal.attributes['kakao_account']['email'] eq rereply.email or #authorization.expression('hasAuthority(''ROLE_ADMIN'')')}">
                                 <form action="/boards/comments/delete/rereply" method="post">
                                     <input type="hidden" name="rereplyId" th:value="${rereply.id}">
                                     <input type="hidden" name="boardId" th:value="${boardId}">
