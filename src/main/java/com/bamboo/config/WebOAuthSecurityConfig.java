@@ -2,6 +2,7 @@ package com.bamboo.config;
 
 import com.bamboo.config.oauth.CustomAuthenticationFailureHandler;
 import com.bamboo.config.oauth.CustomAuthenticationSuccessHandler;
+import com.bamboo.config.oauth.CustomOauthAuthenticationFailureHandler;
 import com.bamboo.config.oauth.MyOAuth2MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,7 @@ public class WebOAuthSecurityConfig {
     private final MyOAuth2MemberService myOAuth2MemberService;
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+    private final CustomOauthAuthenticationFailureHandler customOauthAuthenticationFailureHandler;
 
     // 토큰 방식으로 인증을 하기 때문에 기존에 사용하던 플러그인, 세션 비활성화
     @Bean
@@ -60,6 +62,7 @@ public class WebOAuthSecurityConfig {
                         // Authorization 요청과 관련된 상태 저장
                         .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
                                 .userService(myOAuth2MemberService))
+                        .failureHandler(customOauthAuthenticationFailureHandler)
                 )
                 .logout((logout) -> logout
                         .logoutSuccessHandler(customLogoutSuccessHandler()))
